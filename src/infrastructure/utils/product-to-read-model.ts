@@ -9,9 +9,6 @@ export const productToReadModel = (
     id: doc.id,
     name: doc.name,
     stock: doc.stock,
-    price: {
-      amount: doc.price.amount,
-      currency: doc.price.currency,
-    },
+    price: doc.price,
   };
 };

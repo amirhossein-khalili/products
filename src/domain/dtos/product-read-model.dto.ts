@@ -3,10 +3,7 @@ export interface ProductReadModelDto {
 
   name: string;
 
-  price: {
-    amount: number;
-    currency: string;
-  };
+  price: number;
 
   stock: number;
 

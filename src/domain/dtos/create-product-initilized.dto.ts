@@ -1,4 +1,4 @@
-export class CreateProductDto {
+export class CreateProductInitializedDto {
   public id: string;
 
   public stock: number;
@@ -6,4 +6,6 @@ export class CreateProductDto {
   public price: number;
 
   public name: string;
+
+  public status: string;
 }

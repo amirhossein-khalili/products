@@ -1,12 +1,11 @@
-import { CreateProductFailed, ProductCreatedEvent } from '../events';
-import { PriceVO } from '../value-objects/price.vo';
 import {
   BaseAggregate,
   DuplicateIdException,
   IMetadata,
 } from 'com.chargoon.cloud.svc.common';
 import { Logger } from '@nestjs/common';
-import { CreateProductDto } from '../dtos';
+import { CreateProductDto, FinilizeCreateProductDto } from '../dtos';
+import { ProductCreatedEvent, CreateProductInitilizedEvent } from '../events';
 
 export type ParsedProductSnapshot = Partial<BaseAggregate> & {
   id: string;
@@ -21,7 +20,7 @@ export class Product extends BaseAggregate {
 
   public name: string;
 
-  public price: PriceVO;
+  public price: number;
 
   public stock: number = 0;
 
@@ -31,44 +30,59 @@ export class Product extends BaseAggregate {
     super();
   }
 
-  // =============================================================================
-  //                                 Factory methods
-  // =============================================================================
   public create(data: CreateProductDto, meta: IMetadata) {
-    let event;
+    this.logger.verbose('Product:create');
 
-    try {
-      this.logger.verbose('Product:create');
-
-      if (this.id) {
-        throw new DuplicateIdException(this.id);
-      }
-
-      event = new ProductCreatedEvent(
-        {
-          id: data.id,
-          name: data.name,
-          price: data.price,
-          stock: data.stock,
-          status: 'created',
-        },
-        this.getVersionedMeta(meta),
-      );
-    } catch (error) {
-      this.logger.warn(error);
-      event = new CreateProductFailed(
-        { id: this.id, error: error },
-        this.getVersionedMeta(meta),
-      );
+    if (this.id) {
+      throw new DuplicateIdException(this.id);
     }
 
-    this.apply(event);
+    this.apply(
+      new CreateProductInitilizedEvent(
+        { ...data, status: 'pending' },
+        this.getVersionedMeta(meta),
+      ),
+    );
+  }
+
+  public finalizeCreate(data: FinilizeCreateProductDto, meta: IMetadata) {
+    this.logger.verbose('products:finalizeCreate');
+    try {
+      this.apply(
+        new ProductCreatedEvent(
+          { status: 'finalize' },
+          this.getVersionedMeta(meta),
+        ),
+      );
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  private onCreateProductInitilizedEvent(event: CreateProductInitilizedEvent) {
+    const { data } = event;
+    this.id = data.id;
+    this.name = data.name;
+    this.price = data.price;
+    this.stock = data.stock;
+    this.status = data.status;
+  }
+
+  private onProductCreatedEvent(event: ProductCreatedEvent) {
+    this.status = event.data.status;
+  }
+
+  // =============================================================================
+  //                                 Sncapshot
+  // =============================================================================
+  override applySnapshot(snapshot: ParsedProductSnapshot): void {
+    throw new Error('Method not implemented.');
   }
 
   public static rehydrate(plainData: {
     id: string;
     name: string;
-    price: PriceVO;
+    price: number;
     stock: number;
     status: string;
   }): Product {
@@ -79,27 +93,5 @@ export class Product extends BaseAggregate {
     product.stock = plainData.stock;
     product.status = plainData.status;
     return product;
-  }
-
-  // =============================================================================
-  //                                 Event handlers
-  // =============================================================================
-
-  private onProductCreatedEvent(event: ProductCreatedEvent): void {
-    this.logger.verbose('onProductCreatedEvent');
-
-    this.id = event.data.id;
-    this.name = event.data.name;
-    this.price = event.data.price;
-    this.stock = event.data.stock;
-
-    this.versionHistory[event.meta.version] = event.meta;
-  }
-
-  // =============================================================================
-  //                                 Sncapshot
-  // =============================================================================
-  override applySnapshot(snapshot: ParsedProductSnapshot): void {
-    throw new Error('Method not implemented.');
   }
 }

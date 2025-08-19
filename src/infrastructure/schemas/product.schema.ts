@@ -22,8 +22,8 @@ export class ProductSchema {
   })
   name: string;
 
-  @Prop({ type: PriceSchema, required: true, id: false })
-  price: PriceSchema;
+  @Prop({ type: Number, required: true, id: false })
+  price: number;
 
   @Prop({ type: Number, default: 0 })
   stock: number;

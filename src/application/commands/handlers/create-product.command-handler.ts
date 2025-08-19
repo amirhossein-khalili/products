@@ -6,9 +6,7 @@ import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { ConfigService } from '@nestjs/config';
 import { IProductWriteRepository } from '../../../domain/repositories/write-product.irepository';
 import { PRODUCT_WRITE_REPOSITORY } from '../../../domain/repositories/injection-tokens';
-import { Product } from '../../../domain/entities/product.aggregate-root';
 import { domainInfo } from '../../../domain/utils';
-import { v4 as uuidv4 } from 'uuid';
 
 @CommandHandler(CreateProductCommand)
 export class CreateProductHandler
@@ -30,13 +28,11 @@ export class CreateProductHandler
   async execute(command: CreateProductCommand): Promise<any> {
     try {
       const { data, meta } = command;
-      const productId: string = uuidv4();
 
       const product = this.publisher.mergeObjectContext(
-        this.repository.findOneById(command.data.id),
+        await this.repository.findOneById(command.data.id),
       );
-
-      product.create({ ...data, id: productId }, meta);
+      product.create(data, meta);
       product.commit();
     } catch (error) {
       this.logger.error(
