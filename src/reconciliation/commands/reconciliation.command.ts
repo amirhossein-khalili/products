@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Command, Positional, Option } from 'nestjs-command';
 import { ReconciliationMode, ResultMode } from '../enums';
-import { RateLimit } from '../dtos';
 import { ReconciliationConfig } from '../config';
-// import { Queue } from 'bullmq';
+import { AggregateReconstructor } from '../services/aggregate-reconstructor.service';
+import { BaseAggregate } from 'com.chargoon.cloud.svc.common';
 
 @Injectable()
 export class ReconciliationCommand {
-  constructor() {}
+  constructor(private readonly reconstructor: AggregateReconstructor) {}
 
   @Command({
     command: 'reconcile <aggregateName>',
@@ -44,26 +44,45 @@ export class ReconciliationCommand {
       default: 100,
     })
     batchSize: number,
+
+    @Option({
+      name: 'id',
+      describe: 'id of the entity that should check .',
+      type: 'string',
+    })
+    id: string,
   ): Promise<void> {
-    console.log(`--- Starting reconciliation for ${aggregateName} ---`);
-    console.log(
-      `Mode: ${reconMode}, Result Mode: ${resultMode}, Batch Size: ${batchSize}`,
-    );
+    if (id) {
+      console.log(`Rehydrating ${aggregateName} with ID: ${id}`);
+      try {
+        const aggregate: BaseAggregate = await this.reconstructor.reconstruct(
+          id,
+          aggregateName,
+        );
+        console.log('Rehydration successful. Aggregate state:');
+        console.log(JSON.stringify(aggregate, null, 2));
+      } catch (error) {
+        console.error('Failed to rehydrate aggregate:', error.message);
+      }
+      return;
+    }
 
-    const config = new ReconciliationConfig(
-      aggregateName,
-      reconMode,
-      new RateLimit(10, 60, 20),
-      new Date(),
-      resultMode,
-      batchSize,
-      {},
-    );
-
-    this.validateConfig(config);
-
-    console.log('inja ');
-    console.log(config);
+    // console.log(`--- Starting reconciliation for ${aggregateName} ---`);
+    // console.log(
+    //   `Mode: ${reconMode}, Result Mode: ${resultMode}, Batch Size: ${batchSize}`,
+    // );
+    // const config = new ReconciliationConfig(
+    //   aggregateName,
+    //   reconMode,
+    //   new RateLimit(10, 60, 20),
+    //   new Date(),
+    //   resultMode,
+    //   batchSize,
+    //   {},
+    // );
+    // this.validateConfig(config);
+    // console.log('inja ');
+    // console.log(config);
     // const job = await this.reconciliationQueue.add(
     //   'reconcile-aggregate',
     //   config,

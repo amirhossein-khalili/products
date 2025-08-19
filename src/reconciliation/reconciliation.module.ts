@@ -1,17 +1,27 @@
 import { Module, DynamicModule, Provider } from '@nestjs/common';
 import { CommandModule } from 'nestjs-command';
 import { ReconciliationCommand } from './commands/reconciliation.command';
-import { ConfigRegistry, AggregateConfig } from './config';
+import { ConfigRegistry } from './config';
 import { ReconciliationModuleOptions } from './reconciliation-module-options.interface';
 import { getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { GenericMongooseRepository } from './persistance/generic-mongoose.repository';
+import { EventStoreService, RedisModule } from 'com.chargoon.cloud.svc.common';
+import { AggregateReconstructor } from './services/aggregate-reconstructor.service';
 
 // Helper function to create a unique injection token for each dynamic repository
 export const getReconciliationRepositoryToken = (aggregateName: string) =>
   `RECONCILIATION_REPOSITORY_${aggregateName.toUpperCase()}`;
 
-@Module({})
+@Module({
+  imports: [CommandModule, RedisModule],
+  providers: [
+    ReconciliationCommand,
+    AggregateReconstructor,
+    EventStoreService,
+    ConfigRegistry,
+  ],
+})
 export class ReconciliationModule {
   static forRoot(options: ReconciliationModuleOptions): DynamicModule {
     // Dynamically create a provider for each registered aggregate's repository
@@ -40,12 +50,7 @@ export class ReconciliationModule {
 
     return {
       module: ReconciliationModule,
-      imports: [CommandModule],
-      providers: [
-        configRegistryProvider,
-        ReconciliationCommand,
-        ...repositoryProviders,
-      ],
+      providers: [configRegistryProvider, ...repositoryProviders],
       exports: [ConfigRegistry, ...repositoryProviders],
     };
   }

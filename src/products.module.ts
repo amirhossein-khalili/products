@@ -26,6 +26,9 @@ import {
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { ProductWriteRepository } from './infrastructure/repositories/write-product.repository';
 import { productsTransformers } from './products.transformers';
+import { ReconciliationModule } from './reconciliation/reconciliation.module';
+import { AggregateConfig } from './reconciliation/config';
+import { Product } from './domain/entities/product.aggregate-root';
 
 const Repositories: Provider[] = [
   {
@@ -123,6 +126,19 @@ const Repositories: Provider[] = [
       ],
       'read_db',
     ),
+
+    ReconciliationModule.forRoot({
+      aggregates: [
+        {
+          name: 'products',
+          config: new AggregateConfig(
+            Product,
+            ProductSchema,
+            (product: Product) => {},
+          ),
+        },
+      ],
+    }),
   ],
   providers: [
     ...Object.values(CommandHandlers),
