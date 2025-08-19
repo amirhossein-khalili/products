@@ -1,4 +1,8 @@
-import { ProductCreatedEvent, ProductSnapshotCreated } from './domain/events';
+import {
+  CreateProductInitilizedEvent,
+  ProductCreatedEvent,
+  ProductSnapshotCreated,
+} from './domain/events';
 
 export const productsTransformers = <const>{
   ProductSnapshotCreated: (event: any) =>
@@ -6,4 +10,7 @@ export const productsTransformers = <const>{
 
   ProductCreatedEvent: (event: any) =>
     new ProductCreatedEvent(event.data, event.meta),
+
+  CreateProductInitilizedEvent: (event: any) =>
+    new CreateProductInitilizedEvent(event.data, event.meta),
 };

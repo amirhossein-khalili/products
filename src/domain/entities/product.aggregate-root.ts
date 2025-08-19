@@ -50,7 +50,7 @@ export class Product extends BaseAggregate {
     try {
       this.apply(
         new ProductCreatedEvent(
-          { status: 'finalize' },
+          { ...data, status: 'finalize' },
           this.getVersionedMeta(meta),
         ),
       );
@@ -69,6 +69,7 @@ export class Product extends BaseAggregate {
   }
 
   private onProductCreatedEvent(event: ProductCreatedEvent) {
+    this.id = event.data.id;
     this.status = event.data.status;
   }
 
