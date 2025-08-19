@@ -14,7 +14,7 @@ import { BaseController, IMetadata } from 'com.chargoon.cloud.svc.common';
 import { CreateProductCommand } from '../application/commands/impls';
 import { IProductReadRepository } from '../domain/repositories/read-product.irepository';
 import { PRODUCT_READ_REPOSITORY } from '../domain/repositories/injection-tokens';
-import { CreateProductDto } from 'src/domain/dtos';
+import { CreateProductDto } from 'src/domain/dtos/create-product.dto';
 
 /**
  * Controller for handling all product-related HTTP requests.

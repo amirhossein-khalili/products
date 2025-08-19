@@ -20,7 +20,7 @@ export class FinalizeCreateProductHandler
   constructor(
     protected readonly publisher: EventPublisher,
     protected override readonly amqpConnection: AmqpConnection,
-    @Inject('IProductsRepository')
+    @Inject('IProductWriteRepository')
     protected readonly repository: IProductWriteRepository,
   ) {
     super(amqpConnection);
