@@ -25,6 +25,11 @@ import {
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { ProductWriteRepository } from './infrastructure/repositories/write-product.repository';
 import { productsTransformers } from './products.transformers';
+import { RecoService } from './interfaces/reco.service';
+import { RecoController } from './interfaces/reco.controller';
+import { AggregateReconstructor } from './interfaces/reco/services/aggregate-reconstructor.service';
+import { StateComparator } from './interfaces/reco/services/state-comparator.service';
+import { ProductRecoRepository } from './interfaces/reco/repo/products/product-reco.repository';
 
 const Repositories: Provider[] = [
   {
@@ -153,7 +158,11 @@ const Repositories: Provider[] = [
     ...Object.values(CommandHandlers),
     ...Object.values(EventHandlers),
     ...Repositories,
+    RecoService,
+    AggregateReconstructor,
+    StateComparator,
+    ProductRecoRepository,
   ],
-  controllers: [ProductsController],
+  controllers: [ProductsController, RecoController],
 })
 export class ProductsModule {}

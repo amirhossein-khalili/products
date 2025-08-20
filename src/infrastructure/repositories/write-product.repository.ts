@@ -23,7 +23,6 @@ export class ProductWriteRepository implements IProductWriteRepository {
 
   public findOneById(id: string, meta?: IMetadata): Promise<Product | null> {
     const product = new Product();
-    console.log(ProductSnapshotCreated);
 
     return rehydrateAndMakeSnapshotIfPossible(
       product,
