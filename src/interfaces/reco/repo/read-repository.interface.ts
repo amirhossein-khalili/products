@@ -26,4 +26,12 @@ export interface ReadRepository<T> {
    * @param filters Map of field-value filters.
    */
   getIdsByFilter(filters: Record<string, any>): Promise<string[]>;
+
+  /**
+   * یک سند را با شناسه پیدا کرده و با داده‌های جدید به‌روزرسانی می‌کند.
+   * @param id شناسه سند.
+   * @param updateData داده‌هایی که باید جایگزین شوند.
+   * @returns سند به‌روزرسانی‌شده.
+   */
+  findByIdAndUpdate(id: string, updateData: Partial<T>): Promise<T | null>;
 }

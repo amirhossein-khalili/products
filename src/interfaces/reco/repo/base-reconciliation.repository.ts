@@ -36,4 +36,13 @@ export abstract class BaseReconciliationRepository<T extends Document>
     const documents = await this.model.find(filters, '_id').lean().exec();
     return documents.map((doc) => doc._id.toString());
   }
+
+  async findByIdAndUpdate(
+    id: string,
+    updateData: Partial<T>,
+  ): Promise<T | null> {
+    return this.model
+      .findByIdAndUpdate(id, { $set: updateData }, { new: true })
+      .exec();
+  }
 }
