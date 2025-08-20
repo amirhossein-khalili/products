@@ -4,7 +4,6 @@ import { ProductReadRepository } from './infrastructure/repositories/read-produc
 import { ProductsController } from './interfaces/products.controller';
 import {
   PRODUCT_READ_REPOSITORY,
-  PRODUCT_RECONCILIATION_REPOSITORY,
   PRODUCT_WRITE_REPOSITORY,
 } from './domain/repositories/injection-tokens';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -19,7 +18,6 @@ import { CacheModule } from '@nestjs/cache-manager';
 import type { RedisClientOptions } from 'redis';
 import { redisStore } from 'cache-manager-redis-store';
 import {
-  BaseAggregate,
   EventStoreModule,
   redisCommonConf,
   RedisModule,
@@ -27,10 +25,6 @@ import {
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { ProductWriteRepository } from './infrastructure/repositories/write-product.repository';
 import { productsTransformers } from './products.transformers';
-import { ReconciliationModule } from './reconciliation/reconciliation.module';
-import { AggregateConfig } from './reconciliation/config';
-import { Product } from './domain/entities/product.aggregate-root';
-import { ProductReconciliationRepository } from './infrastructure/repositories/product-reconciliation.repository';
 
 const Repositories: Provider[] = [
   {
@@ -135,29 +129,6 @@ const Repositories: Provider[] = [
       ],
       'read_db',
     ),
-
-    ReconciliationModule.forRoot({
-      aggregates: [
-        {
-          name: 'products',
-          config: new AggregateConfig(
-            ProductsModule,
-            Product,
-            productsTransformers,
-            ProductReconciliationRepository,
-            (aggregate: Product): Record<string, any> => {
-              return {
-                _id: aggregate.id,
-                name: aggregate.name,
-                price: aggregate.price,
-                stock: aggregate.stock,
-                status: aggregate.status,
-              };
-            },
-          ),
-        },
-      ],
-    }),
 
     EventStoreModule.registerAsync({
       imports: [ConfigModule, CqrsModule],
