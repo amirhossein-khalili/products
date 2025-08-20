@@ -19,6 +19,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import type { RedisClientOptions } from 'redis';
 import { redisStore } from 'cache-manager-redis-store';
 import {
+  BaseAggregate,
   EventStoreModule,
   redisCommonConf,
   RedisModule,
@@ -29,6 +30,7 @@ import { productsTransformers } from './products.transformers';
 import { ReconciliationModule } from './reconciliation/reconciliation.module';
 import { AggregateConfig } from './reconciliation/config';
 import { Product } from './domain/entities/product.aggregate-root';
+import { ProductReconciliationRepository } from './infrastructure/repositories/product-reconciliation.repository';
 
 const Repositories: Provider[] = [
   {
@@ -46,7 +48,9 @@ const Repositories: Provider[] = [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+
     CqrsModule,
+
     RabbitMQModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -56,6 +60,7 @@ const Repositories: Provider[] = [
         connectionInitOptions: { wait: false },
       }),
     }),
+
     EventStoreModule.registerAsync({
       imports: [ConfigModule, CqrsModule],
       inject: [ConfigService],
@@ -86,6 +91,7 @@ const Repositories: Provider[] = [
       },
       transformers: { ...productsTransformers },
     }),
+
     CacheModule.registerAsync<RedisClientOptions>({
       isGlobal: true,
       imports: [ConfigModule],
@@ -100,6 +106,7 @@ const Repositories: Provider[] = [
         ttl: configService.get<number>('CACHE_TTL'),
       }),
     }),
+
     RedisModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -107,6 +114,7 @@ const Repositories: Provider[] = [
         config: redisCommonConf(configService),
       }),
     }),
+
     MongooseModule.forRootAsync({
       connectionName: 'read_db',
       imports: [ConfigModule],
@@ -117,6 +125,7 @@ const Repositories: Provider[] = [
           'mongodb://localhost:27017/app_read',
       }),
     }),
+
     MongooseModule.forFeature(
       [
         {
@@ -132,12 +141,41 @@ const Repositories: Provider[] = [
         {
           name: 'products',
           config: new AggregateConfig(
+            ProductsModule,
             Product,
-            ProductSchema,
-            (product: Product) => {},
+            productsTransformers,
+            ProductReconciliationRepository,
+            (aggregate: Product): Record<string, any> => {
+              return {
+                _id: aggregate.id,
+                name: aggregate.name,
+                price: aggregate.price,
+                stock: aggregate.stock,
+                status: aggregate.status,
+              };
+            },
           ),
         },
       ],
+    }),
+
+    EventStoreModule.registerAsync({
+      imports: [ConfigModule, CqrsModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        connectionString: configService.get<string>(
+          'EVENTSTORE_CONNECTION_STRING',
+        ),
+
+        subscriptions:
+          process.env.RUN_CONTEXT === 'CLI'
+            ? {}
+            : {
+                corr_products: '$ce-corr_products',
+              },
+
+        transformers: { ...productsTransformers },
+      }),
     }),
   ],
   providers: [

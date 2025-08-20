@@ -1,6 +1,6 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Inject, Logger } from '@nestjs/common';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { BaseEventHandler } from 'com.chargoon.cloud.svc.common/dist/base-event-handler';
 import { ProductCreatedEvent } from 'src/domain/events';
 import { IProductReadRepository } from 'src/domain/repositories/read-product.irepository';
@@ -14,7 +14,6 @@ export class ProductCreatedHandler
     protected override readonly amqpConnection: AmqpConnection,
     @Inject('IProductReadRepository')
     protected readonly repository: IProductReadRepository,
-    private readonly eventBus: EventBus,
   ) {
     super(amqpConnection);
   }

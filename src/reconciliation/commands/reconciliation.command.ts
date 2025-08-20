@@ -52,8 +52,11 @@ export class ReconciliationCommand {
     })
     id: string,
   ): Promise<void> {
+    console.log('inja 1');
+
     if (id) {
       console.log(`Rehydrating ${aggregateName} with ID: ${id}`);
+
       try {
         const aggregate: BaseAggregate = await this.reconstructor.reconstruct(
           id,

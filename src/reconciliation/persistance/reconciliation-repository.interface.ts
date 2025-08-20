@@ -1,10 +1,10 @@
-import { BaseAggregate } from 'com.chargoon.cloud.svc.common';
+import { Document } from 'mongoose';
 
 /**
  * Defines the contract for a repository used by the reconciliation process.
  * Any repository (generic or custom) must implement this interface.
  */
-export interface IReconciliationRepository<T extends BaseAggregate> {
+export interface IReconciliationRepository<T extends Document> {
   /**
    * Finds a single aggregate instance by its ID.
    * @param id The ID of the aggregate.

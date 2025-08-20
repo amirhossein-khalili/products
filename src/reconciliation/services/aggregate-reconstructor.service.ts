@@ -1,8 +1,7 @@
-import { Injectable, Type, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   BaseAggregate,
   EventStoreService,
-  rehydrateAndMakeSnapshotIfPossible,
   IMetadata,
   InjectRedis,
 } from 'com.chargoon.cloud.svc.common';
@@ -21,42 +20,54 @@ export class AggregateReconstructor {
 
   /**
    * Reconstructs an aggregate from its events.
-   * @param id The aggregate ID.
+   * @param streamId The aggregate ID.
    * @param aggregateName The unique name of the aggregate as registered in ConfigRegistry.
    * @param meta Optional metadata for event sourcing.
    * @returns The reconstructed aggregate instance.
    */
   async reconstruct<T extends BaseAggregate>(
-    id: string,
+    streamId: string,
     aggregateName: string,
     meta?: IMetadata,
   ): Promise<T> {
     const aggregateConfig = this.configRegistry.getConfig(aggregateName);
+
     if (!aggregateConfig) {
       throw new Error(
         `Configuration for aggregate "${aggregateName}" not found.`,
       );
     }
+    const rehydratedAggregate = new aggregateConfig.aggregateClass();
 
-    const aggregate = new aggregateConfig.aggregateClass() as T;
-
-    // TODO: The snapshot event needs to be dynamically retrieved or configured.
-    // For now, let's assume it's null or handled inside the function.
-    // A better approach is to add `snapshotEvent` to the AggregateConfig.
-    const SnapshotEvent = null;
-
-    const rehydratedAggregate = await rehydrateAndMakeSnapshotIfPossible(
-      aggregate,
-      aggregateName,
-      this.eventStoreService,
-      this.redis,
-      id,
-      SnapshotEvent,
-      this.logger,
-      meta,
-      { skipSnapshot: true },
+    await this.rehydrate(
+      streamId,
+      rehydratedAggregate,
+      aggregateConfig.transformers,
     );
 
     return rehydratedAggregate as T;
+  }
+
+  async rehydrate(streamId: string, model: BaseAggregate, transformers: any) {
+    console.log('inja 6');
+    console.log(
+      await this.eventStoreService.readStreamFromStart(streamId).next(),
+    );
+    for await (const convertedEvent of this.eventStoreService.readStreamFromStart(
+      streamId,
+    )) {
+      console.log('inja 5');
+
+      if (convertedEvent.eventStreamId.startsWith('$')) {
+        continue;
+      }
+
+      const transform = transformers[convertedEvent.eventType];
+
+      if (transform) {
+        const finalEvent = transform(convertedEvent);
+        model.apply(finalEvent);
+      }
+    }
   }
 }
