@@ -10,4 +10,10 @@ export class RecoController {
     const { id } = body;
     return await this.recoService.checkSingleId(id);
   }
+
+  @Post('fix')
+  public async recoFix(@Body() body) {
+    const { id } = body;
+    return await this.recoService.reconcileById(id);
+  }
 }

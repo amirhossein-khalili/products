@@ -11,7 +11,7 @@ import { ComparisonResult, Discrepancy } from '../dtos';
 export class StateComparator {
   compare(expected: any, actual: any): ComparisonResult {
     if (isEqual(expected, actual)) {
-      return new ComparisonResult(true);
+      return new ComparisonResult(actual._id, true);
     }
 
     const differences = deepDiff.diff(expected, actual) || [];
@@ -21,6 +21,7 @@ export class StateComparator {
     });
 
     return new ComparisonResult(
+      actual._id,
       false,
       discrepancies,
       'Mismatch detected in fields.',
