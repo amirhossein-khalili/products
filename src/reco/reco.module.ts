@@ -1,3 +1,4 @@
+// reco.module.ts
 import {
   DynamicModule,
   Module,
@@ -18,6 +19,7 @@ export class RecoModule {
 
     const modelToken = getModelToken(options.name);
 
+    // Create repository provider
     const repositoryProvider: Provider = {
       provide: ReconciliationRepository,
       useFactory: (model) => {
@@ -26,13 +28,33 @@ export class RecoModule {
       inject: [modelToken],
     };
 
+    const providers: Provider[] = [repositoryProvider];
+    const injectTokens: any[] = [ReconciliationRepository];
+
+    if (options.writeRepository) {
+      const writeRepositoryToken = options.writeRepoToken || 'WRITE_REPOSITORY';
+
+      const writeRepositoryProvider: Provider = {
+        provide: writeRepositoryToken,
+        useClass: options.writeRepository,
+      };
+
+      providers.push(writeRepositoryProvider);
+      injectTokens.push(writeRepositoryToken);
+    }
+
     const recoServiceProvider: Provider = {
       provide: RecoService,
-      useFactory: (repository: ReconciliationRepository<any>) => {
-        return new RecoService(repository);
+      useFactory: (...args: any[]) => {
+        const repository = args[0];
+        const writeRepository = args[1];
+
+        return new RecoService(repository, writeRepository);
       },
-      inject: [ReconciliationRepository],
+      inject: injectTokens,
     };
+
+    providers.push(recoServiceProvider);
 
     return {
       module: RecoModule,
@@ -42,7 +64,7 @@ export class RecoModule {
         ]),
       ],
       controllers: [DynamicRecoController],
-      providers: [repositoryProvider, recoServiceProvider],
+      providers,
       exports: [recoServiceProvider],
     };
   }

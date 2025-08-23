@@ -1,11 +1,17 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { RecoService } from './reco.service';
 import { Document } from 'mongoose';
+import { IMetadata } from 'com.chargoon.cloud.svc.common';
 
-// دکوریتور @Controller() خالی می‌ماند چون مسیر به صورت داینامیک تنظیم می‌شود
 @Controller()
 export class RecoController<T extends Document> {
-  // سرویس عمومی به کنترلر تزریق می‌شود
   constructor(private readonly recoService: RecoService<T>) {}
 
   @Get()
@@ -16,5 +22,17 @@ export class RecoController<T extends Document> {
   @Get(':id')
   public async findById(@Param('id') id: string) {
     return this.recoService.findById(id);
+  }
+
+  @Get('write/:id')
+  public async findOneByIdFromWrite(
+    @Param('id') id: string,
+    @Query() meta: IMetadata,
+  ) {
+    try {
+      return await this.recoService.findOneByIdFromWrite(id, meta);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.NOT_IMPLEMENTED);
+    }
   }
 }
