@@ -31,6 +31,7 @@ export class RecoModule {
     const providers: Provider[] = [repositoryProvider];
     const injectTokens: any[] = [ReconciliationRepository];
 
+    // Conditionally add write repository provider
     if (options.writeRepository) {
       const writeRepositoryToken = options.writeRepoToken || 'WRITE_REPOSITORY';
 
@@ -43,13 +44,26 @@ export class RecoModule {
       injectTokens.push(writeRepositoryToken);
     }
 
+    // Conditionally add toComparableState provider
+    if (options.toComparableState) {
+      const toComparableStateProvider: Provider = {
+        provide: 'TO_COMPARABLE_STATE',
+        useValue: options.toComparableState,
+      };
+
+      providers.push(toComparableStateProvider);
+      injectTokens.push('TO_COMPARABLE_STATE');
+    }
+
+    // Update service provider
     const recoServiceProvider: Provider = {
       provide: RecoService,
       useFactory: (...args: any[]) => {
         const repository = args[0];
-        const writeRepository = args[1];
+        const writeRepository = args[1]; // Will be undefined if not provided
+        const toComparableState = args[2]; // Will be undefined if not provided
 
-        return new RecoService(repository, writeRepository);
+        return new RecoService(repository, writeRepository, toComparableState);
       },
       inject: injectTokens,
     };

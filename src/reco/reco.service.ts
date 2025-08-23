@@ -10,6 +10,8 @@ export class RecoService<T extends Document> {
     private readonly repository: ReconciliationRepository<T>,
     @Inject('WRITE_REPOSITORY')
     private readonly writeRepository: IWriteRepository<T>,
+    @Inject('TO_COMPARABLE_STATE')
+    private readonly toComparableState?: (aggregate: any) => any,
   ) {}
 
   public async findAllIds(): Promise<string[]> {
