@@ -44,4 +44,22 @@ export class RecoController {
     const { ids } = body;
     return await this.recoService.reconcileBatchByIds(ids);
   }
+
+  /**
+   * Checks all entities in the read model for discrepancies.
+   * @example POST /reco/all
+   */
+  @Post('all')
+  public async recoAll() {
+    return await this.recoService.checkAll();
+  }
+
+  /**
+   * Fixes discrepancies for all entities in the read model.
+   * @example POST /reco/all/fix
+   */
+  @Post('all/fix')
+  public async recoFixAll() {
+    return await this.recoService.reconcileAll();
+  }
 }

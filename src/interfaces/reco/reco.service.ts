@@ -106,4 +106,22 @@ export class RecoService {
     );
     return results;
   }
+
+  /**
+   * Checks all products for discrepancies by fetching all IDs from the read model.
+   * @returns A promise that resolves to an array of comparison results for all entities.
+   */
+  public async checkAll() {
+    const allIds = await this.readRepository.getAllIds();
+    return this.checkBatchIds(allIds);
+  }
+
+  /**
+   * Reconciles all products by fetching all IDs from the read model.
+   * @returns A promise that resolves to an array of updated documents or errors for all entities.
+   */
+  public async reconcileAll() {
+    const allIds = await this.readRepository.getAllIds();
+    return this.reconcileBatchByIds(allIds);
+  }
 }

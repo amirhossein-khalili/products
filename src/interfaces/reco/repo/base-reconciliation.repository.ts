@@ -21,7 +21,9 @@ export abstract class BaseReconciliationRepository<T extends Document>
 
   async getAllIds(): Promise<string[]> {
     const documents = await this.model.find({}, '_id').lean().exec();
-    return documents.map((doc) => doc._id.toString());
+    return documents
+      .filter((doc) => doc && doc._id)
+      .map((doc) => doc._id.toString());
   }
 
   async getIdsByDateRange(startDate: Date, endDate: Date): Promise<string[]> {
