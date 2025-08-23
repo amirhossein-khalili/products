@@ -3,9 +3,10 @@ import { ValidationPipe } from '@nestjs/common';
 // import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 // import { ConfigService } from '@nestjs/config';
 import { ProductsModule } from './products.module';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(ProductsModule);
+  const app = await NestFactory.create(AppModule);
 
   // const configService = app.get(ConfigService);
 
