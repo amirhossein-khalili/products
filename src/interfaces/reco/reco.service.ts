@@ -24,7 +24,7 @@ export class RecoService {
     private readonly stateComparator: StateComparator,
   ) {}
 
-  public async checkSingleId(id) {
+  public async checkSingleId(id: string) {
     const aggregate = await this.aggregateReconstructor.reconstruct(id);
 
     const expectedState = toComparableState(aggregate);
@@ -33,7 +33,7 @@ export class RecoService {
 
     const comparison = this.stateComparator.compare(expectedState, actualState);
 
-    return { expectedState, actualState, comparison };
+    return { id, expectedState, actualState, comparison };
   }
 
   /**
@@ -67,5 +67,43 @@ export class RecoService {
     }
 
     return updatedDocument;
+  }
+
+  /**
+   * Checks a batch of products for discrepancies between the write and read models.
+   * @param ids An array of product IDs to check.
+   * @returns A promise that resolves to an array of comparison results.
+   */
+  public async checkBatchIds(ids: string[]) {
+    // Use Promise.all to run checks concurrently for better performance.
+    // If a single check fails, it won't stop the others.
+    const results = await Promise.all(
+      ids.map((id) =>
+        this.checkSingleId(id).catch((error) => ({
+          id,
+          error: error.message,
+        })),
+      ),
+    );
+    return results;
+  }
+
+  /**
+   * Reconciles a batch of products' states by updating the read models
+   * to match the state derived from the event store.
+   * @param ids An array of product IDs to reconcile.
+   * @returns A promise that resolves to an array of the updated documents or errors.
+   */
+  public async reconcileBatchByIds(ids: string[]): Promise<any[]> {
+    // Use Promise.all to run reconciliations concurrently.
+    const results = await Promise.all(
+      ids.map((id) =>
+        this.reconcileById(id).catch((error) => ({
+          id,
+          error: error.message,
+        })),
+      ),
+    );
+    return results;
   }
 }
