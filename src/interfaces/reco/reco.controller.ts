@@ -46,20 +46,24 @@ export class RecoController {
   }
 
   /**
-   * Checks all entities in the read model for discrepancies.
-   * @example POST /reco/all
+   * Checks all entities in the read model for discrepancies, with an optional filter.
+   * If no filter is provided, it checks all entities.
+   * @param body - The request body, optionally containing a 'filters' object for MongoDB queries.
+   * @example POST /reco/all { "filters": { "status": "active" } }
    */
   @Post('all')
-  public async recoAll() {
-    return await this.recoService.checkAll();
+  public async recoAll(@Body() body: { filters?: Record<string, any> }) {
+    return await this.recoService.checkAll(body?.filters);
   }
 
   /**
-   * Fixes discrepancies for all entities in the read model.
-   * @example POST /reco/all/fix
+   * Fixes discrepancies for all entities in the read model, with an optional filter.
+   * If no filter is provided, it fixes all entities.
+   * @param body - The request body, optionally containing a 'filters' object for MongoDB queries.
+   * @example POST /reco/all/fix { "filters": { "price": { "$gt": 100 } } }
    */
   @Post('all/fix')
-  public async recoFixAll() {
-    return await this.recoService.reconcileAll();
+  public async recoFixAll(@Body() body: { filters?: Record<string, any> }) {
+    return await this.recoService.reconcileAll(body?.filters);
   }
 }

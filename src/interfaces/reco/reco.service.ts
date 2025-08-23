@@ -108,20 +108,30 @@ export class RecoService {
   }
 
   /**
-   * Checks all products for discrepancies by fetching all IDs from the read model.
-   * @returns A promise that resolves to an array of comparison results for all entities.
+   * Checks products for discrepancies. Fetches all IDs from the read model
+   * that match the optional filter. If no filter is provided, checks all documents.
+   * @param filters - An optional MongoDB query object to filter which documents to check.
+   * @returns A promise that resolves to an array of comparison results.
    */
-  public async checkAll() {
-    const allIds = await this.readRepository.getAllIds();
-    return this.checkBatchIds(allIds);
+  public async checkAll(filters?: Record<string, any>) {
+    const ids =
+      filters && Object.keys(filters).length > 0
+        ? await this.readRepository.getIdsByFilter(filters)
+        : await this.readRepository.getAllIds();
+    return this.checkBatchIds(ids);
   }
 
   /**
-   * Reconciles all products by fetching all IDs from the read model.
-   * @returns A promise that resolves to an array of updated documents or errors for all entities.
+   * Reconciles products. Fetches all IDs from the read model
+   * that match the optional filter. If no filter is provided, reconciles all documents.
+   * @param filters - An optional MongoDB query object to filter which documents to reconcile.
+   * @returns A promise that resolves to an array of updated documents or errors.
    */
-  public async reconcileAll() {
-    const allIds = await this.readRepository.getAllIds();
-    return this.reconcileBatchByIds(allIds);
+  public async reconcileAll(filters?: Record<string, any>) {
+    const ids =
+      filters && Object.keys(filters).length > 0
+        ? await this.readRepository.getIdsByFilter(filters)
+        : await this.readRepository.getAllIds();
+    return this.reconcileBatchByIds(ids);
   }
 }
