@@ -1,8 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { AggregateReconstructor } from './reco/services/aggregate-reconstructor.service';
+import { AggregateReconstructor } from './services/aggregate-reconstructor.service';
 import { Product } from 'src/domain/entities/product.aggregate-root';
-import { ProductRecoRepository } from './reco/repo/products/product-reco.repository';
-import { StateComparator } from './reco/services/state-comparator.service';
+import { ProductRecoRepository } from './repo/products/product-reco.repository';
+import { StateComparator } from './services/state-comparator.service';
 import { ProductDocument } from 'src/infrastructure/schemas/product.schema';
 
 export function toComparableState(aggregate: Product) {
