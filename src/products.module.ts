@@ -30,6 +30,10 @@ import { RecoController } from './interfaces/reco/reco.controller';
 import { AggregateReconstructor } from './interfaces/reco/services/aggregate-reconstructor.service';
 import { StateComparator } from './interfaces/reco/services/state-comparator.service';
 import { ProductRecoRepository } from './interfaces/reco/repo/products/product-reco.repository';
+import { SchedulerModule } from 'com.chargoon.cloud.svc.common/dist/scheduler';
+import { mongo } from 'mongoose';
+
+const pkg = require('../package.json');
 
 const Repositories: Provider[] = [
   {
@@ -120,7 +124,7 @@ const Repositories: Provider[] = [
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         uri:
-          config.get<string>('QUERY_DATABASE_URL') ??
+          config.get<string>('MONGODB_CONNECTION_STRING') ??
           'mongodb://localhost:27017/app_read',
       }),
     }),
@@ -152,6 +156,28 @@ const Repositories: Provider[] = [
 
         transformers: { ...productsTransformers },
       }),
+    }),
+
+    SchedulerModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        name: pkg.name,
+        ensureIndex: true,
+        mongo: new mongo.MongoClient(
+          configService.get<string>('MONGODB_CONNECTION_STRING') ||
+            'mongodb://' +
+              `${encodeURIComponent(configService.get<string>('MONGODB_USERNAME', 'admin'))}:` +
+              `${encodeURIComponent(configService.get<string>('MONGODB_PASSWORD', '1'))}@` +
+              `${configService.get<string>('MONGODB_HOSTNAME', 'localhost')}:` +
+              `${configService.get<number>('MONGODB_PORT', 27017)}/?replicaSet=` +
+              `${configService.get<string>('MONGODB_REPLICASET', 'rs0')}` +
+              `&directConnection=${configService.get<string>('MONGODB_DIRECT', 'false')}` +
+              `&readPreference=${configService.get<string>('MONGODB_READ_PREFERENCE', 'primary')}`,
+        ).db('db-scheduler'),
+        db: {
+          collection: 'jobs',
+        },
+      }),
+      inject: [ConfigService],
     }),
   ],
   providers: [
