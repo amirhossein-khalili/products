@@ -10,7 +10,7 @@ export class RecoController<T extends Document> {
 
   @Get()
   public async findAll() {
-    return this.recoService.findAll();
+    return this.recoService.findAllIds();
   }
 
   @Get(':id')

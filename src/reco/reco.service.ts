@@ -1,18 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { Model, Document } from 'mongoose';
+import { Document } from 'mongoose';
+import { ReconciliationRepository } from './repositories/reconciliation.repository';
 
 @Injectable()
 export class RecoService<T extends Document> {
-  constructor(
-    // حذف @InjectModel چون مدل به صورت مستقیم از factory تزریق می‌شود
-    private readonly entityModel: Model<T>,
-  ) {}
+  constructor(private readonly repository: ReconciliationRepository<T>) {}
 
-  public async findAll(): Promise<T[]> {
-    return this.entityModel.find().exec();
+  public async findAllIds(): Promise<string[]> {
+    return this.repository.getAllIds();
   }
 
   public async findById(id: string): Promise<T | null> {
-    return this.entityModel.findById(id).exec();
+    return this.repository.findById(id) as Promise<T | null>;
   }
 }

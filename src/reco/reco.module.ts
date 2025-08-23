@@ -8,46 +8,41 @@ import {
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { RecoController } from './reco.controller';
 import { RecoService } from './reco.service';
-import { Schema } from 'mongoose';
-
-export interface RecoModuleOptions {
-  name: string;
-  schema: Schema;
-  path: string;
-  connectionName?: string;
-}
+import { RecoModuleOptions } from './interfaces/reco-module-options.interface';
+import { ReconciliationRepository } from './repositories/reconciliation.repository';
 
 @Module({})
 export class RecoModule {
   static forFeature(options: RecoModuleOptions): DynamicModule {
     const DynamicRecoController = this.createDynamicController(options.path);
 
-    // تعیین نام connection - اگر مشخص نشده باشد از default استفاده می‌شود
-    const connectionName = options.connectionName || undefined;
+    const modelToken = getModelToken(options.name);
 
-    // تعیین token مدل با در نظر گیری connection name
-    const modelToken = connectionName
-      ? getModelToken(options.name, connectionName)
-      : getModelToken(options.name);
+    const repositoryProvider: Provider = {
+      provide: ReconciliationRepository,
+      useFactory: (model) => {
+        return new ReconciliationRepository(model);
+      },
+      inject: [modelToken],
+    };
 
     const recoServiceProvider: Provider = {
       provide: RecoService,
-      useFactory: (model) => {
-        return new RecoService(model);
+      useFactory: (repository: ReconciliationRepository<any>) => {
+        return new RecoService(repository);
       },
-      inject: [modelToken], // استفاده از token درست
+      inject: [ReconciliationRepository],
     };
 
     return {
       module: RecoModule,
       imports: [
-        MongooseModule.forFeature(
-          [{ name: options.name, schema: options.schema }],
-          connectionName,
-        ), // مشخص کردن connection name
+        MongooseModule.forFeature([
+          { name: options.name, schema: options.schema },
+        ]),
       ],
       controllers: [DynamicRecoController],
-      providers: [recoServiceProvider],
+      providers: [repositoryProvider, recoServiceProvider],
       exports: [recoServiceProvider],
     };
   }
