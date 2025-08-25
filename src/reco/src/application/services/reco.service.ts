@@ -1,5 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { pick } from 'lodash';
+
 import {
   AggregateReconstructor,
   StateComparator,
@@ -88,11 +89,7 @@ export class RecoService implements RecoServicePort {
     filters?: Record<string, any>,
     fields?: string[],
   ): Promise<any[]> {
-    const ids =
-      filters && Object.keys(filters).length > 0
-        ? await this.readRepository.getIdsByFilter(filters)
-        : await this.readRepository.getAllIds();
-
+    const ids = await this._getIds(filters);
     return this.checkBatchIds(ids, fields);
   }
 
@@ -100,12 +97,20 @@ export class RecoService implements RecoServicePort {
     filters?: Record<string, any>,
     fields?: string[],
   ): Promise<any[]> {
-    const ids =
-      filters && Object.keys(filters).length > 0
-        ? await this.readRepository.getIdsByFilter(filters)
-        : await this.readRepository.getAllIds();
-
+    const ids = await this._getIds(filters);
     return this.reconcileBatchByIds(ids, fields);
+  }
+
+  /**
+   * Fetches entity IDs, either all or based on a filter.
+   * @param filters - Optional filters to apply.
+   * @returns A promise that resolves to an array of entity IDs.
+   */
+  private async _getIds(filters?: Record<string, any>): Promise<string[]> {
+    const hasFilters = filters && Object.keys(filters).length > 0;
+    return hasFilters
+      ? this.readRepository.getIdsByFilter(filters)
+      : this.readRepository.getAllIds();
   }
 
   private createMockState(): any {
