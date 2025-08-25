@@ -14,12 +14,12 @@ export class StateComparator implements StateComparatorInterface {
     }
 
     const differences = deepDiff.diff(expected, actual) || [];
-    const discrepancies = differences.map(diff => 
+    const discrepancies = differences.map((diff) =>
       Discrepancy.create(
         diff.path ? diff.path.join('.') : 'root',
         diff.lhs,
-        diff.rhs
-      )
+        diff.rhs,
+      ),
     );
 
     return ComparisonResult.createMismatch(actual._id, discrepancies);

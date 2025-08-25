@@ -3,12 +3,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { Schema } from 'mongoose';
-import { getModelToken } from '@nestjs/mongoose'; // Import getModelToken
-import { RecoModule, RECO_SERVICE_PORT_TOKEN } from '../src/reco.module';
+import { getModelToken } from '@nestjs/mongoose';
+import { RecoModule } from '../src/reco.module';
 import { WriteRepository } from '../src/domain';
 import { ComparisonResult } from '../src/domain/aggregates/comparison-result.aggregate';
 import { Discrepancy } from '../src/domain/value-objects/discrepancy.value-object';
 import { NotFoundException } from '@nestjs/common';
+import { RECO_SERVICE_PORT } from '../src/application/constants/tokens';
 
 // Mock Aggregate Root for testing purposes
 class MockAggregateRoot {
@@ -50,7 +51,7 @@ describe('RecoController (e2e)', () => {
         }),
       ],
     })
-      .overrideProvider(RECO_SERVICE_PORT_TOKEN)
+      .overrideProvider(RECO_SERVICE_PORT)
       .useValue(mockRecoService)
       // ✅ FIX: Add an override for the Mongoose Model provider
       .overrideProvider(getModelToken('TestEntity'))

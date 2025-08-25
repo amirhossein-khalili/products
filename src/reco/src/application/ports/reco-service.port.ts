@@ -2,7 +2,10 @@ import { ComparisonResult } from '../../domain/aggregates/comparison-result.aggr
 
 export interface RecoServicePort {
   getComparableFields(): string[];
-  checkSingleId(id: string, fields?: string[]): Promise<{
+  checkSingleId(
+    id: string,
+    fields?: string[],
+  ): Promise<{
     id: string;
     expectedState: any;
     actualState: any;
@@ -12,5 +15,8 @@ export interface RecoServicePort {
   checkBatchIds(ids: string[], fields?: string[]): Promise<any[]>;
   reconcileBatchByIds(ids: string[], fields?: string[]): Promise<any[]>;
   checkAll(filters?: Record<string, any>, fields?: string[]): Promise<any[]>;
-  reconcileAll(filters?: Record<string, any>, fields?: string[]): Promise<any[]>;
+  reconcileAll(
+    filters?: Record<string, any>,
+    fields?: string[],
+  ): Promise<any[]>;
 }

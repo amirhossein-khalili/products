@@ -4,7 +4,7 @@ import {
   Provider,
   Controller,
   Type,
-  Inject, 
+  Inject,
 } from '@nestjs/common';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { ReconciliationRepository } from './infrastructure';
@@ -16,43 +16,47 @@ import {
   StateComparator,
 } from './application';
 import { WriteRepository } from './domain';
-
-export const STATE_COMPARATOR_TOKEN = 'STATE_COMPARATOR';
-export const AGGREGATE_RECONSTRUCTOR_TOKEN = 'AGGREGATE_RECONSTRUCTOR';
-export const RECO_SERVICE_PORT_TOKEN = 'RecoServicePort';
+import {
+  AGGREGATE_RECONSTRUCTOR,
+  AGGREGATE_ROOT,
+  RECO_SERVICE_PORT,
+  STATE_COMPARATOR,
+  TO_COMPARABLE_STATE,
+  WRITE_REPOSITORY,
+} from './application/constants/tokens';
 
 @Module({})
 export class RecoModule {
   static forFeature<T = any>(options: RecoModuleOptions<T>): DynamicModule {
     const DynamicRecoController = this.createDynamicController(options.path);
 
-    const writeRepositoryToken = options.writeRepoToken || 'WRITE_REPOSITORY';
+    const writeRepositoryToken = options.writeRepoToken || WRITE_REPOSITORY;
 
     const providers: Provider[] = [
-      // Infrastructure Providers
+      // ----  Infrastructure Providers ----
       {
         provide: ReconciliationRepository,
         useFactory: (model) => new ReconciliationRepository(model),
         inject: [getModelToken(options.name)],
       },
       {
-        provide: STATE_COMPARATOR_TOKEN,
+        provide: STATE_COMPARATOR,
         useClass: StateComparator,
       },
-      // Application Service Providers
+      // ----  Application Service Providers ----
       {
-        provide: AGGREGATE_RECONSTRUCTOR_TOKEN,
+        provide: AGGREGATE_RECONSTRUCTOR,
         useFactory: (writeRepository: WriteRepository<T>) =>
           new AggregateReconstructor<T>(writeRepository),
         inject: [writeRepositoryToken],
       },
-      // Configuration Value Providers
+      //  ---- Configuration Value Providers ----
       {
-        provide: 'TO_COMPARABLE_STATE',
+        provide: TO_COMPARABLE_STATE,
         useValue: options.toComparableState,
       },
       {
-        provide: 'AGGREGATE_ROOT',
+        provide: AGGREGATE_ROOT,
         useValue: options.aggregateRoot,
       },
     ];
@@ -64,13 +68,12 @@ export class RecoModule {
       });
     }
 
-    // Main Service Provider (The Port Implementation)
+    //  ---- Main Service Provider ----
     const recoServiceProvider: Provider = {
-      provide: RECO_SERVICE_PORT_TOKEN,
+      provide: RECO_SERVICE_PORT,
       useFactory: (
         aggregateReconstructor: AggregateReconstructor<T>,
         stateComparator: StateComparator,
-        // --- FIX 1: Add the required generic type argument ---
         readRepository: ReconciliationRepository<any>,
         toComparableState: (aggregate: T) => any,
       ) =>
@@ -81,10 +84,10 @@ export class RecoModule {
           toComparableState,
         ),
       inject: [
-        AGGREGATE_RECONSTRUCTOR_TOKEN,
-        STATE_COMPARATOR_TOKEN,
+        AGGREGATE_RECONSTRUCTOR,
+        STATE_COMPARATOR,
         ReconciliationRepository,
-        'TO_COMPARABLE_STATE',
+        TO_COMPARABLE_STATE,
       ],
     };
 
@@ -106,9 +109,7 @@ export class RecoModule {
   private static createDynamicController(path: string): Type<any> {
     @Controller(path + '/reco')
     class DynamicController extends RecoController {
-      // --- FIX 2: Use the @Inject decorator for clarity and correctness ---
-      // This is the standard NestJS way to inject a provider using a token.
-      constructor(@Inject(RECO_SERVICE_PORT_TOKEN) service: RecoService) {
+      constructor(@Inject(RECO_SERVICE_PORT) service: RecoService) {
         super(service);
       }
     }

@@ -12,12 +12,15 @@ export class ComparisonResult {
     return new ComparisonResult(id, true, [], 'States match');
   }
 
-  static createMismatch(id: string, discrepancies: Discrepancy[]): ComparisonResult {
+  static createMismatch(
+    id: string,
+    discrepancies: Discrepancy[],
+  ): ComparisonResult {
     return new ComparisonResult(
       id,
       false,
       discrepancies,
-      `Mismatch detected in ${discrepancies.length} fields`
+      `Mismatch detected in ${discrepancies.length} fields`,
     );
   }
 }
