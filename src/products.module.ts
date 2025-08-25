@@ -18,6 +18,17 @@ import { EventStoreModule } from 'com.chargoon.cloud.svc.common';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { ProductWriteRepository } from './infrastructure/repositories/write-product.repository';
 import { RecoModule } from './reco/reco.module';
+import { Product } from './domain/entities/product.aggregate-root';
+
+export function toComparableState(aggregate: Product) {
+  return {
+    _id: aggregate.id,
+    name: aggregate.name,
+    price: aggregate.price,
+    stock: aggregate.stock,
+    status: aggregate.status,
+  };
+}
 
 const pkg = require('../package.json');
 
@@ -38,18 +49,18 @@ const Repositories: Provider[] = [
       name: 'productschemas',
       schema: ProductSchemaFactory,
       path: 'products',
-      connectionName: 'read_db', // مشخص کردن نام connection
+      writeRepository: ProductWriteRepository,
+      writeRepoToken: PRODUCT_WRITE_REPOSITORY,
+      toComparableState,
+      aggregateRoot: Product,
     }),
 
-    MongooseModule.forFeature(
-      [
-        {
-          name: ProductSchema.name,
-          schema: ProductSchemaFactory,
-        },
-      ],
-      'read_db',
-    ),
+    MongooseModule.forFeature([
+      {
+        name: ProductSchema.name,
+        schema: ProductSchemaFactory,
+      },
+    ]),
 
     RabbitMQModule.forRootAsync({
       imports: [ConfigModule],

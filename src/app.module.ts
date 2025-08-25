@@ -16,7 +16,6 @@ import {
   RedisModule,
 } from 'com.chargoon.cloud.svc.common';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
-import { ProductWriteRepository } from './infrastructure/repositories/write-product.repository';
 import { productsTransformers } from './products.transformers';
 import { SchedulerModule } from 'com.chargoon.cloud.svc.common/dist/scheduler';
 import { mongo } from 'mongoose';
@@ -99,13 +98,10 @@ const pkg = require('../package.json');
     }),
 
     MongooseModule.forRootAsync({
-      connectionName: 'read_db',
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        uri:
-          config.get<string>('MONGODB_CONNECTION_STRING') ??
-          'mongodb://localhost:27017/app_read',
+        uri: config.get<string>('MONGODB_CONNECTION_STRING'),
       }),
     }),
 

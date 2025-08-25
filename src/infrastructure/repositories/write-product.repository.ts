@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   EventStoreService,
   IMetadata,
@@ -10,6 +10,7 @@ import { ProductSnapshotCreated } from '../../domain/events';
 import { IProductWriteRepository } from 'src/domain/repositories/write-product.irepository';
 import { Product } from 'src/domain/entities/product.aggregate-root';
 
+@Injectable()
 export class ProductWriteRepository implements IProductWriteRepository {
   constructor(
     private eventStore: EventStoreService,

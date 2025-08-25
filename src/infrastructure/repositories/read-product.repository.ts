@@ -9,7 +9,7 @@ import { PaginationParamsDto, ProductReadModelDto } from 'src/domain/dtos';
 @Injectable()
 export class ProductReadRepository implements IProductReadRepository {
   constructor(
-    @InjectModel(ProductSchema.name, 'read_db')
+    @InjectModel(ProductSchema.name)
     private readonly productModel: Model<ProductDocument>,
   ) {}
 
