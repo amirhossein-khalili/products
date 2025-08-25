@@ -11,6 +11,8 @@ import { RecoController } from './reco.controller';
 import { RecoService } from './reco.service';
 import { RecoModuleOptions } from './interfaces/reco-module-options.interface';
 import { ReconciliationRepository } from './repositories/reconciliation.repository';
+import { AggregateReconstructor } from './services/aggregate-reconstructor.service';
+import { StateComparator } from './services/state-comparator.service';
 
 @Module({})
 export class RecoModule {
@@ -55,6 +57,16 @@ export class RecoModule {
       injectTokens.push('TO_COMPARABLE_STATE');
     }
 
+    if (options.aggregateRoot) {
+      const aggregateRootProvider: Provider = {
+        provide: 'AGGREGATE_ROOT',
+        useValue: options.aggregateRoot,
+      };
+
+      providers.push(aggregateRootProvider);
+      injectTokens.push('AGGREGATE_ROOT');
+    }
+
     // Update service provider
     const recoServiceProvider: Provider = {
       provide: RecoService,
@@ -62,8 +74,19 @@ export class RecoModule {
         const repository = args[0];
         const writeRepository = args[1]; // Will be undefined if not provided
         const toComparableState = args[2]; // Will be undefined if not provided
+        const aggregateRoot = args[3];
 
-        return new RecoService(repository, writeRepository, toComparableState);
+        const aggregateReconstructor = new AggregateReconstructor<
+          typeof aggregateRoot
+        >(writeRepository);
+
+        const stateComparator = new StateComparator();
+        return new RecoService(
+          aggregateReconstructor,
+          stateComparator,
+          repository,
+          toComparableState,
+        );
       },
       inject: injectTokens,
     };

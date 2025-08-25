@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException , Inject } from '@nestjs/common';
 import { IWriteRepository } from '../repositories/write-repository.interface';
 
 @Injectable()

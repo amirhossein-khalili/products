@@ -5,6 +5,8 @@ import {
   Query,
   HttpException,
   HttpStatus,
+  Post,
+  Body,
 } from '@nestjs/common';
 import { RecoService } from './reco.service';
 import { Document } from 'mongoose';
@@ -14,25 +16,74 @@ import { IMetadata } from 'com.chargoon.cloud.svc.common';
 export class RecoController<T extends Document> {
   constructor(private readonly recoService: RecoService<T>) {}
 
-  @Get()
-  public async findAll() {
-    return this.recoService.findAllIds();
+  /**
+   * Returns the list of fields that can be used for reconciliation checks and fixes.
+   * @example GET /reco/fields
+   */
+  @Get('fields')
+  public async getFields() {
+    return this.recoService.getComparableFields();
   }
 
-  @Get(':id')
-  public async findById(@Param('id') id: string) {
-    return this.recoService.findById(id);
+  /**
+   * Checks a single entity for discrepancies, optionally for specific fields.
+   */
+  @Post()
+  public async reco(@Body() body: { id: string; fields?: string[] }) {
+    const { id, fields } = body;
+    return await this.recoService.checkSingleId(id, fields);
   }
 
-  @Get('write/:id')
-  public async findOneByIdFromWrite(
-    @Param('id') id: string,
-    @Query() meta: IMetadata,
+  /**
+   * Fixes discrepancies for a single entity, optionally for specific fields.
+   */
+  @Post('fix')
+  public async recoFix(@Body() body: { id: string; fields?: string[] }) {
+    const { id, fields } = body;
+    return await this.recoService.reconcileById(id, fields);
+  }
+
+  /**
+   * Checks a batch of entities for discrepancies, optionally for specific fields.
+   * @example POST /reco/batch { "ids": ["id1", "id2"], "fields": ["price", "stock"] }
+   */
+  @Post('batch')
+  public async recoBatch(@Body() body: { ids: string[]; fields?: string[] }) {
+    const { ids, fields } = body;
+    return await this.recoService.checkBatchIds(ids, fields);
+  }
+
+  /**
+   * Fixes discrepancies for a batch of entities, optionally for specific fields.
+   * @example POST /reco/batch/fix { "ids": ["id1", "id2"], "fields": ["status"] }
+   */
+  @Post('batch/fix')
+  public async recoFixBatch(
+    @Body() body: { ids: string[]; fields?: string[] },
   ) {
-    try {
-      return await this.recoService.findOneByIdFromWrite(id, meta);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.NOT_IMPLEMENTED);
-    }
+    const { ids, fields } = body;
+    return await this.recoService.reconcileBatchByIds(ids, fields);
+  }
+
+  /**
+   * Checks entities for discrepancies, with optional filters and field selection.
+   * @example POST /reco/all { "filters": { "status": "active" }, "fields": ["name"] }
+   */
+  @Post('all')
+  public async recoAll(
+    @Body() body: { filters?: Record<string, any>; fields?: string[] },
+  ) {
+    return await this.recoService.checkAll(body?.filters, body?.fields);
+  }
+
+  /**
+   * Fixes discrepancies for entities, with optional filters and field selection.
+   * @example POST /reco/all/fix { "filters": { "price": { "$gt": 100 } }, "fields": ["price"] }
+   */
+  @Post('all/fix')
+  public async recoFixAll(
+    @Body() body: { filters?: Record<string, any>; fields?: string[] },
+  ) {
+    return await this.recoService.reconcileAll(body?.filters, body?.fields);
   }
 }
