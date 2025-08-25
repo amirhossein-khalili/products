@@ -1,11 +1,6 @@
 import { Document, Model } from 'mongoose';
-import { ReadRepository } from './read-repository.interface';
+import { ReadRepository } from '../../../../domain/repositories/read-repository.interface';
 
-/**
- * An abstract base for reconciliation repositories.
- * It extends the generic BaseRepository and implements the ReadRepository interface,
- * providing default implementations for the reconciliation-specific methods.
- */
 export abstract class BaseReconciliationRepository<T extends Document>
   implements ReadRepository<T>
 {
@@ -21,7 +16,7 @@ export abstract class BaseReconciliationRepository<T extends Document>
 
   async getAllIds(): Promise<string[]> {
     const documents = await this.model.find({}, '_id').lean().exec();
-    return documents.map((doc) => doc._id.toString());
+    return documents.map(doc => doc._id.toString());
   }
 
   async getIdsByDateRange(startDate: Date, endDate: Date): Promise<string[]> {
@@ -29,18 +24,15 @@ export abstract class BaseReconciliationRepository<T extends Document>
       .find({ updatedAt: { $gte: startDate, $lte: endDate } } as any, '_id')
       .lean()
       .exec();
-    return documents.map((doc) => doc._id.toString());
+    return documents.map(doc => doc._id.toString());
   }
 
   async getIdsByFilter(filters: Record<string, any>): Promise<string[]> {
     const documents = await this.model.find(filters, '_id').lean().exec();
-    return documents.map((doc) => doc._id.toString());
+    return documents.map(doc => doc._id.toString());
   }
 
-  async findByIdAndUpdate(
-    id: string,
-    updateData: Partial<T>,
-  ): Promise<T | null> {
+  async findByIdAndUpdate(id: string, updateData: Partial<T>): Promise<T | null> {
     return this.model
       .findByIdAndUpdate(id, { $set: updateData }, { new: true })
       .exec();

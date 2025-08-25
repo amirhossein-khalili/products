@@ -17,7 +17,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventStoreModule } from 'com.chargoon.cloud.svc.common';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { ProductWriteRepository } from './infrastructure/repositories/write-product.repository';
-import { RecoModule } from './reco/reco.module';
+import { RecoModule } from './reco/src/reco.module';
 import { Product } from './domain/entities/product.aggregate-root';
 
 export function toComparableState(aggregate: Product) {
@@ -29,8 +29,6 @@ export function toComparableState(aggregate: Product) {
     status: aggregate.status,
   };
 }
-
-const pkg = require('../package.json');
 
 const Repositories: Provider[] = [
   {
