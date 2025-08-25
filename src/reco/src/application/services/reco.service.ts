@@ -6,6 +6,7 @@ import {
   StateComparator,
   ReadRepository,
   ComparisonResult,
+  Discrepancy,
 } from '../../domain';
 import { RecoServicePort } from '../ports/reco-service.port';
 import { TO_COMPARABLE_STATE } from '../constants/tokens';
@@ -42,8 +43,26 @@ export class RecoService implements RecoServicePort {
       ? fields
       : Object.keys(fullExpectedState);
     const expectedState = pick(fullExpectedState, fieldsToCheck);
-    const actualState = pick(fullActualState, fieldsToCheck);
 
+    // NOTE : check this part should exists ? 
+    // the id fetch from read side so probably we dont need it 
+    if (!fullActualState) {
+      const discrepancy = Discrepancy.create(
+        '_entity',
+        'exists',
+        'not found in read model',
+      );
+      const comparison = ComparisonResult.createMismatch(id, [discrepancy]);
+
+      return {
+        id,
+        expectedState,
+        actualState: null,
+        comparison,
+      };
+    }
+
+    const actualState = pick(fullActualState, fieldsToCheck);
     const comparison = this.stateComparator.compare(expectedState, actualState);
 
     return { id, expectedState, actualState, comparison };
