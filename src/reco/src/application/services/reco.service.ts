@@ -44,8 +44,8 @@ export class RecoService implements RecoServicePort {
       : Object.keys(fullExpectedState);
     const expectedState = pick(fullExpectedState, fieldsToCheck);
 
-    // NOTE : check this part should exists ? 
-    // the id fetch from read side so probably we dont need it 
+    // NOTE : check this part should exists ?
+    // the id fetch from read side so probably we dont need it
     if (!fullActualState) {
       const discrepancy = Discrepancy.create(
         '_entity',
@@ -80,28 +80,38 @@ export class RecoService implements RecoServicePort {
   }
 
   public async checkBatchIds(ids: string[], fields?: string[]): Promise<any[]> {
-    return Promise.all(
-      ids.map((id) =>
-        this.checkSingleId(id, fields).catch((error) => ({
-          id,
-          error: error.message,
-        })),
-      ),
-    );
+    const promises = ids.map((id) => this.checkSingleId(id, fields));
+    const results = await Promise.allSettled(promises);
+
+    return results.map((result, index) => {
+      if (result.status === 'fulfilled') {
+        return result.value;
+      }
+      const error = result.reason as Error;
+      return {
+        id: ids[index],
+        error: error.message || 'An unknown error occurred',
+      };
+    });
   }
 
   public async reconcileBatchByIds(
     ids: string[],
     fields?: string[],
   ): Promise<any[]> {
-    return Promise.all(
-      ids.map((id) =>
-        this.reconcileById(id, fields).catch((error) => ({
-          id,
-          error: error.message,
-        })),
-      ),
-    );
+    const promises = ids.map((id) => this.reconcileById(id, fields));
+    const results = await Promise.allSettled(promises);
+
+    return results.map((result, index) => {
+      if (result.status === 'fulfilled') {
+        return result.value;
+      }
+      const error = result.reason as Error;
+      return {
+        id: ids[index],
+        error: error.message || 'An unknown error occurred',
+      };
+    });
   }
 
   public async checkAll(
