@@ -1,10 +1,5 @@
-import { Module, Provider } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { ProductReadRepository } from './infrastructure/repositories/read-product.repository';
-import {
-  PRODUCT_READ_REPOSITORY,
-  PRODUCT_WRITE_REPOSITORY,
-} from './domain/repositories/injection-tokens';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
@@ -15,6 +10,7 @@ import {
   redisCommonConf,
   RedisModule,
 } from 'com.chargoon.cloud.svc.common';
+
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { productsTransformers } from './products.transformers';
 import { SchedulerModule } from 'com.chargoon.cloud.svc.common/dist/scheduler';
