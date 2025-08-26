@@ -16,6 +16,7 @@ import { productsTransformers } from './products.transformers';
 import { SchedulerModule } from 'com.chargoon.cloud.svc.common/dist/scheduler';
 import { mongo } from 'mongoose';
 import { ProductsModule } from './products.module';
+import { RecoModule } from './reco/src/reco.module';
 
 const pkg = require('../package.json');
 
@@ -26,6 +27,8 @@ const pkg = require('../package.json');
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+
+    RecoModule.forRoot(),
 
     CqrsModule,
 

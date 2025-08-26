@@ -1,0 +1,20 @@
+import { Injectable, Inject, OnModuleInit } from '@nestjs/common';
+import { RecoRegistry } from './reco-registry.service';
+import { RecoModuleOptions } from '../dtos/reco-module-options.dto';
+import { RECO_SERVICE_PORT } from '../constants/tokens';
+import { RecoServicePort } from '../ports/reco-service.port';
+
+@Injectable()
+export class RecoRegistrator implements OnModuleInit {
+  constructor(
+    private readonly registry: RecoRegistry,
+    @Inject(RECO_SERVICE_PORT)
+    private readonly service: RecoServicePort,
+    @Inject('RECO_OPTIONS')
+    private readonly options: RecoModuleOptions,
+  ) {}
+
+  onModuleInit() {
+    this.registry.register(this.options, this.service);
+  }
+}

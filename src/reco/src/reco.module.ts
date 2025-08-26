@@ -24,25 +24,37 @@ import {
   TO_COMPARABLE_STATE,
   WRITE_REPOSITORY,
 } from './application/constants/tokens';
+import { RecoRegistry } from './application/services/reco-registry.service';
+import { RecoRegistrator } from './application/services/reco-registrator.service';
 
 @Module({})
 export class RecoModule {
+  static forRoot(): DynamicModule {
+    return {
+      module: RecoModule,
+      providers: [RecoRegistry],
+      exports: [RecoRegistry],
+      global: true,
+    };
+  }
+
   static forFeature<T = any>(options: RecoModuleOptions<T>): DynamicModule {
     const DynamicRecoController = this.createDynamicController(options.path);
 
     const writeRepositoryToken = options.writeRepoToken || WRITE_REPOSITORY;
 
     const providers: Provider[] = [
+      // ---- Configuration Value Providers ----
+      { provide: 'RECO_OPTIONS', useValue: options },
+      { provide: TO_COMPARABLE_STATE, useValue: options.toComparableState },
+      { provide: AGGREGATE_ROOT, useValue: options.aggregateRoot },
       // ----  Infrastructure Providers ----
       {
         provide: ReconciliationRepository,
         useFactory: (model) => new ReconciliationRepository(model),
         inject: [getModelToken(options.name)],
       },
-      {
-        provide: STATE_COMPARATOR,
-        useClass: StateComparator,
-      },
+      { provide: STATE_COMPARATOR, useClass: StateComparator },
       // ----  Application Service Providers ----
       {
         provide: AGGREGATE_RECONSTRUCTOR,
@@ -50,15 +62,8 @@ export class RecoModule {
           new AggregateReconstructor<T>(writeRepository),
         inject: [writeRepositoryToken],
       },
-      //  ---- Configuration Value Providers ----
-      {
-        provide: TO_COMPARABLE_STATE,
-        useValue: options.toComparableState,
-      },
-      {
-        provide: AGGREGATE_ROOT,
-        useValue: options.aggregateRoot,
-      },
+      // ---- Registration Service ----
+      RecoRegistrator,
     ];
 
     if (options.writeRepository) {
