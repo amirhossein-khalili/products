@@ -14,11 +14,11 @@ import {
 import * as EventHandlers from './application/event-handlers';
 import * as CommandHandlers from './application/commands/handlers';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { EventStoreModule } from 'com.chargoon.cloud.svc.common';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { ProductWriteRepository } from './infrastructure/repositories/write-product.repository';
-import { RecoModule } from './reco/src/reco.module';
 import { Product } from './domain/entities/product.aggregate-root';
+import { productsTransformers } from './products.transformers';
+import { RecoModule } from './reco/src/reco.module';
 
 export function toComparableState(aggregate: Product) {
   return {
@@ -47,10 +47,10 @@ const Repositories: Provider[] = [
       name: 'productschemas',
       schema: ProductSchemaFactory,
       path: 'products',
-      writeRepository: ProductWriteRepository,
-      writeRepoToken: PRODUCT_WRITE_REPOSITORY,
       toComparableState,
       aggregateRoot: Product,
+      aggregateName: 'corr_products',
+      eventTransformers: productsTransformers,
     }),
 
     MongooseModule.forFeature([
@@ -59,7 +59,6 @@ const Repositories: Provider[] = [
         schema: ProductSchemaFactory,
       },
     ]),
-
     RabbitMQModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -69,14 +68,10 @@ const Repositories: Provider[] = [
         connectionInitOptions: { wait: false },
       }),
     }),
-
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-
     CqrsModule,
-
-    EventStoreModule,
   ],
   providers: [
     ...Object.values(CommandHandlers),

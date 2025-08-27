@@ -15,17 +15,22 @@ import {
   AggregateReconstructor,
   StateComparator,
 } from './application';
-import { WriteRepository } from './domain';
 import {
   AGGREGATE_RECONSTRUCTOR,
   AGGREGATE_ROOT,
   RECO_SERVICE_PORT,
   STATE_COMPARATOR,
   TO_COMPARABLE_STATE,
-  WRITE_REPOSITORY,
+  EVENT_TRANSFORMERS,
+  AGGREGATE_NAME,
 } from './application/constants/tokens';
 import { RecoRegistry } from './application/services/reco-registry.service';
 import { RecoRegistrator } from './application/services/reco-registrator.service';
+import {
+  EventStoreModule,
+  EventStoreService,
+  BaseAggregate,
+} from 'com.chargoon.cloud.svc.common';
 
 @Module({})
 export class RecoModule {
@@ -38,42 +43,55 @@ export class RecoModule {
     };
   }
 
-  static forFeature<T = any>(options: RecoModuleOptions<T>): DynamicModule {
+  static forFeature<T extends BaseAggregate>(
+    options: RecoModuleOptions<T>,
+  ): DynamicModule {
     const DynamicRecoController = this.createDynamicController(options.path);
-
-    const writeRepositoryToken = options.writeRepoToken || WRITE_REPOSITORY;
 
     const providers: Provider[] = [
       // ---- Configuration Value Providers ----
       { provide: 'RECO_OPTIONS', useValue: options },
       { provide: TO_COMPARABLE_STATE, useValue: options.toComparableState },
       { provide: AGGREGATE_ROOT, useValue: options.aggregateRoot },
-      // ----  Infrastructure Providers ----
+      { provide: EVENT_TRANSFORMERS, useValue: options.eventTransformers },
+      { provide: AGGREGATE_NAME, useValue: options.aggregateName },
+
+      // ---- Infrastructure Providers ----
       {
         provide: ReconciliationRepository,
         useFactory: (model) => new ReconciliationRepository(model),
         inject: [getModelToken(options.name)],
       },
       { provide: STATE_COMPARATOR, useClass: StateComparator },
-      // ----  Application Service Providers ----
+
+      // ---- Application Service Providers ----
       {
         provide: AGGREGATE_RECONSTRUCTOR,
-        useFactory: (writeRepository: WriteRepository<T>) =>
-          new AggregateReconstructor<T>(writeRepository),
-        inject: [writeRepositoryToken],
+        useFactory: (
+          eventStoreService: EventStoreService,
+          aggregateName: string,
+          aggregateRoot: Type<T>,
+          eventTransformers: Record<string, (event: any) => any>,
+        ) =>
+          new AggregateReconstructor<T>(
+            eventStoreService,
+            aggregateName,
+            aggregateRoot,
+            eventTransformers,
+          ),
+        inject: [
+          EventStoreService,
+          AGGREGATE_NAME,
+          AGGREGATE_ROOT,
+          EVENT_TRANSFORMERS,
+        ],
       },
+
       // ---- Registration Service ----
       RecoRegistrator,
     ];
 
-    if (options.writeRepository) {
-      providers.push({
-        provide: writeRepositoryToken,
-        useClass: options.writeRepository,
-      });
-    }
-
-    //  ---- Main Service Provider ----
+    // ---- Main Service Provider ----
     const recoServiceProvider: Provider = {
       provide: RECO_SERVICE_PORT,
       useFactory: (
@@ -118,7 +136,6 @@ export class RecoModule {
         super(service);
       }
     }
-
     return DynamicController;
   }
 }
