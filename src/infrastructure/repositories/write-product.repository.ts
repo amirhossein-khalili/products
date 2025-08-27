@@ -1,16 +1,16 @@
-import { Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   EventStoreService,
-  IMetadata,
   rehydrateAndMakeSnapshotIfPossible,
   InjectRedis,
 } from 'com.chargoon.cloud.svc.common';
 import Redis from 'ioredis';
 import { ProductSnapshotCreated } from '../../domain/events';
-import { IProductWriteRepository } from 'src/domain/repositories/write-product.irepository';
 import { Product } from 'src/domain/entities/product.aggregate-root';
+import { WriteRepository } from 'src/reco/src/domain';
 
-export class ProductWriteRepository implements IProductWriteRepository {
+@Injectable()
+export class ProductWriteRepository implements WriteRepository<Product> {
   constructor(
     private eventStore: EventStoreService,
     @InjectRedis() private readonly redis: Redis,
@@ -21,9 +21,11 @@ export class ProductWriteRepository implements IProductWriteRepository {
     throw new Error('Method not implemented.');
   }
 
-  public findOneById(id: string, meta?: IMetadata): Promise<Product | null> {
+  public findOneById(
+    id: string,
+    eventTransformers: Record<string, (event: any) => any>,
+  ): Promise<Product | null> {
     const product = new Product();
-    console.log(ProductSnapshotCreated);
 
     return rehydrateAndMakeSnapshotIfPossible(
       product,
@@ -33,8 +35,9 @@ export class ProductWriteRepository implements IProductWriteRepository {
       id,
       ProductSnapshotCreated,
       this.logger,
-      meta,
+      null, // meta
       true,
+      eventTransformers,
     ) as Promise<Product>;
   }
 

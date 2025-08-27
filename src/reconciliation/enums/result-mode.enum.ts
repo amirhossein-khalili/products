@@ -1,6 +1,0 @@
-export enum ResultMode {
-  LOGGER_ONLY = 'LOGGER_ONLY',
-  DATABASE_ONLY = 'DATABASE_ONLY',
-  BOTH = 'BOTH',
-  CUSTOM_HANDLER = 'CUSTOM_HANDLER',
-}
