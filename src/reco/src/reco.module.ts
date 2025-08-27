@@ -15,7 +15,6 @@ import {
   AggregateReconstructor,
   StateComparator,
 } from './application';
-import { WriteRepository } from './domain';
 import {
   AGGREGATE_RECONSTRUCTOR,
   AGGREGATE_ROOT,
@@ -23,10 +22,10 @@ import {
   RECO_SERVICE_PORT,
   STATE_COMPARATOR,
   TO_COMPARABLE_STATE,
-  WRITE_REPOSITORY,
 } from './application/constants/tokens';
 import { RecoRegistry } from './application/services/reco-registry.service';
 import { RecoRegistrator } from './application/services/reco-registrator.service';
+import { BaseAggregate } from 'com.chargoon.cloud.svc.common';
 
 @Module({})
 export class RecoModule {
@@ -39,10 +38,10 @@ export class RecoModule {
     };
   }
 
-  static forFeature<T = any>(options: RecoModuleOptions<T>): DynamicModule {
+  static forFeature<T extends BaseAggregate>(
+    options: RecoModuleOptions<T>,
+  ): DynamicModule {
     const DynamicRecoController = this.createDynamicController(options.path);
-
-    const writeRepositoryToken = options.writeRepoToken || WRITE_REPOSITORY;
 
     const providers: Provider[] = [
       // ---- Configuration Value Providers ----
@@ -61,25 +60,10 @@ export class RecoModule {
       },
       { provide: STATE_COMPARATOR, useClass: StateComparator },
       // ----  Application Service Providers ----
-      {
-        provide: AGGREGATE_RECONSTRUCTOR,
-        useFactory: (
-          writeRepository: WriteRepository<T>,
-          eventTransformers: any,
-        ) =>
-          new AggregateReconstructor<T>(writeRepository, eventTransformers),
-        inject: [writeRepositoryToken, EVENT_TRANSFORMERS],
-      },
+
       // ---- Registration Service ----
       RecoRegistrator,
     ];
-
-    if (options.writeRepository) {
-      providers.push({
-        provide: writeRepositoryToken,
-        useClass: options.writeRepository,
-      });
-    }
 
     //  ---- Main Service Provider ----
     const recoServiceProvider: Provider = {

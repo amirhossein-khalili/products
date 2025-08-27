@@ -6,8 +6,6 @@ export interface RecoModuleOptions<T = any> {
   name: string;
   schema: Schema;
   path: string;
-  writeRepository?: Type<WriteRepository<T>>;
-  writeRepoToken?: string;
   toComparableState: (aggregate: T) => any;
   aggregateRoot: Type<T>;
   eventTransformers?: Record<string, (event: any) => any>;

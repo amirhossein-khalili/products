@@ -15,10 +15,23 @@ import * as EventHandlers from './application/event-handlers';
 import * as CommandHandlers from './application/commands/handlers';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventStoreModule } from 'com.chargoon.cloud.svc.common';
+import { EventStoreModule } from 'com.chargoon.cloud.svc.common';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { ProductWriteRepository } from './infrastructure/repositories/write-product.repository';
 import { RecoModule } from './reco/src/reco.module';
+import { RecoModule } from './reco/src/reco.module';
 import { Product } from './domain/entities/product.aggregate-root';
+import { productsTransformers } from './products.transformers';
+
+export function toComparableState(aggregate: Product) {
+  return {
+    _id: aggregate.id,
+    name: aggregate.name,
+    price: aggregate.price,
+    stock: aggregate.stock,
+    status: aggregate.status,
+  };
+}
 import { productsTransformers } from './products.transformers';
 
 export function toComparableState(aggregate: Product) {
@@ -48,8 +61,6 @@ const Repositories: Provider[] = [
       name: 'productschemas',
       schema: ProductSchemaFactory,
       path: 'products',
-      writeRepository: ProductWriteRepository,
-      writeRepoToken: PRODUCT_WRITE_REPOSITORY,
       toComparableState,
       aggregateRoot: Product,
       eventTransformers: productsTransformers,
@@ -73,7 +84,13 @@ const Repositories: Provider[] = [
     }),
 
     ConfigModule.forRoot({
+    ConfigModule.forRoot({
       isGlobal: true,
+    }),
+
+    CqrsModule,
+
+    EventStoreModule,
     }),
 
     CqrsModule,
