@@ -1,10 +1,13 @@
+// File: reco/src/cli/cli.module.ts
+
 import { Module } from '@nestjs/common';
-import { RecoModule } from '../reco.module';
-import { RecoCommand } from './reco-command';
 import { ActionQuestion, NameQuestion } from './reco.questions';
+import { CliReportGenerator } from './cli-report-generator.service';
+import { RecoCommand } from './reco-command';
+import { AppModule } from 'src/app.module';
 
 @Module({
-  imports: [RecoModule.forRoot()],
-  providers: [RecoCommand, ActionQuestion, NameQuestion],
+  imports: [AppModule],
+  providers: [RecoCommand, ActionQuestion, NameQuestion, CliReportGenerator],
 })
 export class CliModule {}

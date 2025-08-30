@@ -1,10 +1,23 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { RecoServicePort } from '../application';
+import { Controller, Get, Post, Body } from '@nestjs/common';
+import { RecoRegistry, RecoServicePort } from '../application';
 import { BatchIdsBodyDto, FilterBodyDto, SingleIdBodyDto } from './dtos';
 
 @Controller()
 export class RecoController {
-  constructor(private readonly recoService: RecoServicePort) {}
+  constructor(
+    private readonly recoService: RecoServicePort,
+    private readonly recoRegistry: RecoRegistry,
+  ) {}
+
+  @Get('all-modules')
+  public getModules() {
+    return this.recoRegistry.getAll();
+  }
+
+  @Get('fields')
+  public getFields() {
+    return this.recoService.getComparableFields();
+  }
 
   @Post()
   public reco(@Body() body: SingleIdBodyDto) {

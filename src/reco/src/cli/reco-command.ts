@@ -4,113 +4,124 @@ import {
   InquirerService,
   Option,
 } from 'nest-commander';
+import { RecoRegistry } from '../application/services/reco-registry.service';
+import { CliReportGenerator } from './cli-report-generator.service';
 
 @Command({
-  name: 'create-reco',
-  description: 'A command to create a new reco',
+  name: 'reco',
+  description:
+    'Run reconciliation checks and fixes and export results to Excel.',
+  aliases: ['create-reco'],
 })
 export class RecoCommand extends CommandRunner {
-  constructor(private readonly inquirer: InquirerService) {
+  constructor(
+    private readonly inquirer: InquirerService,
+    private readonly recoRegistry: RecoRegistry,
+    private readonly reportGenerator: CliReportGenerator,
+  ) {
     super();
   }
 
-  // Update the options interface to include the new properties
   async run(
     passedParams: string[],
     options?: {
-      action?: string;
+      action?: 'check' | 'fix';
       name?: string;
-      filter?: Record<string, any>; // Will be a parsed object from the JSON string
-      fields?: string[]; // Will be an array of strings
+      ids?: string[];
+      filter?: Record<string, any>;
+      fields?: string[];
     },
   ): Promise<void> {
-    let action = options?.action;
-    let name = options?.name;
+    let { action, name, ids, filter, fields } = options;
 
-    // --- Interactive questions for action and name remain the same ---
-    if (!action) {
-      action = (
-        await this.inquirer.ask<{ action: string }>(
-          'action-question',
-          undefined,
-        )
-      ).action;
-    }
+    // --- Interactive questions ---
     if (!name) {
+      // Assuming you have a question set named 'name-question'
       name = (
         await this.inquirer.ask<{ name: string }>('name-question', undefined)
       ).name;
     }
+    if (!action) {
+      // Assuming you have a question set named 'action-question'
+      action = (
+        await this.inquirer.ask<{ action: 'check' | 'fix' }>(
+          'action-question',
+          undefined,
+        )
+      ).action as 'check' | 'fix';
+    }
 
-    // --- Directly use the new optional flags ---
-    const filter = options?.filter;
-    const fields = options?.fields;
+    // --- Get the correct service instance ---
+    const recoService = this.recoRegistry.getService(name);
+    if (!recoService) {
+      console.error(
+        `❌ Error: No reconciliation module found with the name "${name}".`,
+      );
+      return;
+    }
 
+    // --- Execute the report generator ---
     try {
-      // Use the variables in your service logic
-      console.log('✅ Reco command executed with the following parameters:');
-      console.log(`- Action: ${action}`);
-      console.log(`- Name: ${name}`);
-
-      if (filter) {
-        console.log(`- Filter Object: ${JSON.stringify(filter, null, 2)}`);
-      } else {
-        console.log('- Filter: Not provided');
-      }
-
-      if (fields && fields.length > 0) {
-        console.log(`- Fields: [${fields.join(', ')}]`);
-      } else {
-        console.log('- Fields: Not provided');
-      }
-
-      // Example of your service call would go here
-      // await this.recoService.process({ action, name, filter, fields });
+      await this.reportGenerator.generateReport({
+        recoService,
+        action,
+        name,
+        ids,
+        filter,
+        fields,
+      });
     } catch (error) {
-      console.error('❌ Error creating reco:', error.message);
+      console.error(
+        '❌ An unexpected error occurred during command execution:',
+        error.message,
+      );
     }
   }
 
-  // --- Existing Options ---
+  // --- Command-line Options ---
   @Option({
     flags: '-a, --action [string]',
-    description: 'The action to perform on the reco entity',
+    description: 'The action: "check" or "fix"',
   })
-  parseAction(val: string): string {
+  parseAction(val: string): 'check' | 'fix' {
+    if (val !== 'check' && val !== 'fix')
+      throw new Error('Action must be either "check" or "fix"');
     return val;
   }
 
   @Option({
     flags: '-n, --name [string]',
-    description: 'The name for the reco entity',
+    description: 'The name of the reco module to run',
   })
   parseName(val: string): string {
     return val;
   }
 
-  // --- NEW: Option for JSON filter ---
+  @Option({
+    flags: '-i, --ids [ids...]',
+    description: 'A list of specific entity IDs',
+  })
+  parseIds(id: string, previous: string[] = []): string[] {
+    return [...previous, id];
+  }
+
   @Option({
     flags: '-f, --filter [json]',
     description: 'A JSON string to filter entities',
   })
   parseFilter(val: string): Record<string, any> {
     try {
-      // This will parse the JSON string from the CLI into a JavaScript object
       return JSON.parse(val);
-    } catch (error) {
-      // nest-commander will catch this and display a user-friendly error
-      throw new Error('Invalid JSON provided for --filter option.');
+    } catch (e) {
+      throw new Error('Invalid JSON for --filter');
     }
   }
 
-  // --- NEW: Option for a list of fields ---
   @Option({
-    flags: '-p, --fields [fields...]', // The '...' makes this a variadic option
-    description: 'A list of specific fields to check or reconcile',
+    flags: '-p, --fields [fields...]',
+    description: 'A list of specific fields',
   })
   parseFields(field: string, previous: string[] = []): string[] {
-    // This function is called for each field provided.
-    // It accumulates them into a single array.
     return [...previous, field];
   }
 }
