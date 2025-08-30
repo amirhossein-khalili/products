@@ -27,7 +27,6 @@ import {
 import { RecoRegistry } from './application/services/reco-registry.service';
 import { RecoRegistrator } from './application/services/reco-registrator.service';
 import {
-  EventStoreModule,
   EventStoreService,
   BaseAggregate,
 } from 'com.chargoon.cloud.svc.common';
@@ -132,8 +131,11 @@ export class RecoModule {
   private static createDynamicController(path: string): Type<any> {
     @Controller(path + '/reco')
     class DynamicController extends RecoController {
-      constructor(@Inject(RECO_SERVICE_PORT) service: RecoService) {
-        super(service);
+      constructor(
+        @Inject(RECO_SERVICE_PORT) service: RecoService,
+        @Inject() recoRegistry: RecoRegistry,
+      ) {
+        super(service, recoRegistry);
       }
     }
     return DynamicController;

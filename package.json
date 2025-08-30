@@ -19,7 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "cli": "ts-node -r tsconfig-paths/register src/reconciliation/cli.ts",
+    "cli": "ts-node -r tsconfig-paths/register src/reco/src/cli/main.cli.ts",
     "check-reco-modules": "ts-node ./src/reco/src/check-reco-modules.ts"
   },
   "dependencies": {
@@ -65,6 +65,7 @@
     "ioredis": "^5.7.0",
     "lodash": "^4.17.21",
     "mongoose": "^8.16.1",
+    "nest-commander": "^3.19.0",
     "nestjs-command": "^3.1.5",
     "nestjs-commander": "^0.2.6",
     "passport": "^0.7.0",

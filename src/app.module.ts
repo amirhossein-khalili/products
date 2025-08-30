@@ -13,17 +13,12 @@ import {
 
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { productsTransformers } from './products.transformers';
-import { SchedulerModule } from 'com.chargoon.cloud.svc.common/dist/scheduler';
-import { mongo } from 'mongoose';
 import { ProductsModule } from './products.module';
 import { RecoModule } from './reco/src/reco.module';
-
-const pkg = require('../package.json');
 
 @Module({
   imports: [
     ProductsModule,
-
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -121,28 +116,6 @@ const pkg = require('../package.json');
 
         transformers: { ...productsTransformers },
       }),
-    }),
-
-    SchedulerModule.forRootAsync({
-      useFactory: (configService: ConfigService) => ({
-        name: pkg.name,
-        ensureIndex: true,
-        mongo: new mongo.MongoClient(
-          configService.get<string>('MONGODB_CONNECTION_STRING') ||
-            'mongodb://' +
-              `${encodeURIComponent(configService.get<string>('MONGODB_USERNAME', 'admin'))}:` +
-              `${encodeURIComponent(configService.get<string>('MONGODB_PASSWORD', '1'))}@` +
-              `${configService.get<string>('MONGODB_HOSTNAME', 'localhost')}:` +
-              `${configService.get<number>('MONGODB_PORT', 27017)}/?replicaSet=` +
-              `${configService.get<string>('MONGODB_REPLICASET', 'rs0')}` +
-              `&directConnection=${configService.get<string>('MONGODB_DIRECT', 'false')}` +
-              `&readPreference=${configService.get<string>('MONGODB_READ_PREFERENCE', 'primary')}`,
-        ).db('db-scheduler'),
-        db: {
-          collection: 'jobs',
-        },
-      }),
-      inject: [ConfigService],
     }),
   ],
   providers: [],
