@@ -98,25 +98,6 @@ import { RecoModule } from './reco/src/reco.module';
         uri: config.get<string>('MONGODB_CONNECTION_STRING'),
       }),
     }),
-
-    EventStoreModule.registerAsync({
-      imports: [ConfigModule, CqrsModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        connectionString: configService.get<string>(
-          'EVENTSTORE_CONNECTION_STRING',
-        ),
-
-        subscriptions:
-          process.env.RUN_CONTEXT === 'CLI'
-            ? {}
-            : {
-                corr_products: '$ce-corr_products',
-              },
-
-        transformers: { ...productsTransformers },
-      }),
-    }),
   ],
   providers: [],
 })
