@@ -11,17 +11,32 @@ const program = new Command();
 program
   .version('1.0.0')
   .description('CLI for data reconciliation')
+  //
+  // module that used this module : like Product module
+  //
   .option('-n, --name <string>', 'aggregate name (required)', '')
-  .option('-p, --path <string>', 'module path (required)', '')
+  //
+  // action like get-fields or others like batch , batch-fix the parts that is in the controller
+  //
+  // NOTE : some actions need id part like if user add should add id too
+  .option('-a, --action <string>', 'module action (required)', '')
+  .option('-i, --id <string>', 'single ID for check or reconcile actions')
+  .option('-s, --ids <string>', 'comma-separated IDs for batch actions')
+  //
+  // filters are the same
+  //
   .option('-f, --filter <JSON>', 'filter criteria as JSON string')
-  .option('--fields <string>', 'comma-separated list of fields')
+  //
+  // fields are the same
+  //
+  .option('-fi, --fields <string>', 'comma-separated list of fields')
   .parse(process.argv);
 
 const options = program.opts();
 
 // Validate required options
-if (!options.name || !options.path) {
-  console.error('Error: --name and --path are required options');
+if (!options.name || !options.action) {
+  console.error('Error: --name and --action are required options');
   program.help();
   process.exit(1);
 }
@@ -47,8 +62,7 @@ if (options.fields) {
 console.log('Starting reconciliation with options:');
 console.log({
   name: options.name,
-  path: options.path,
+  action: options.action,
   filter: Object.keys(filterObj).length ? filterObj : 'No filter',
   fields: fieldsArray.length ? fieldsArray : 'All fields',
 });
-

@@ -1,8 +1,6 @@
-import { Injectable } from '@nestjs/common';
 import { RecoModuleOptions } from '../dtos/reco-module-options.dto';
 import { RecoServicePort } from '../ports/reco-service.port';
 
-@Injectable()
 export class RecoRegistry {
   private readonly modules = new Map<
     string,

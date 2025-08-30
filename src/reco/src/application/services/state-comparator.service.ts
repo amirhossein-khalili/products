@@ -1,12 +1,9 @@
-import { Injectable } from '@nestjs/common';
 import { isEqual } from 'lodash';
 import * as deepDiff from 'deep-diff';
-
 import { StateComparator as StateComparatorInterface } from '../../domain/services/state-comparator.interface';
 import { ComparisonResult } from '../../domain/aggregates/comparison-result.aggregate';
 import { Discrepancy } from '../../domain/value-objects/discrepancy.value-object';
 
-@Injectable()
 export class StateComparator implements StateComparatorInterface {
   compare(expected: any, actual: any): ComparisonResult {
     if (isEqual(expected, actual)) {
