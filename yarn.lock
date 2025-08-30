@@ -2564,6 +2564,11 @@
   dependencies:
     undici-types "~7.10.0"
 
+"@types/node@^11.13.5":
+  version "11.15.54"
+  resolved "http://devbuild-srv.chargoon.net:30873/@types%2fnode/-/node-11.15.54.tgz#59ed60e7b0d56905a654292e8d73275034eb6283"
+  integrity sha512-1RWYiq+5UfozGsU6MwJyFX6BtktcT10XRjvcAQmskCtMcW3tPske88lM/nHv7BQG1w9KBXI1zPGuu5PnNCX14g==
+
 "@types/node@^16.18.67":
   version "16.18.126"
   resolved "http://devbuild-srv.chargoon.net:30873/@types%2fnode/-/node-16.18.126.tgz#27875faa2926c0f475b39a8bb1e546c0176f8d4b"
@@ -2723,14 +2728,7 @@
   resolved "https://registry.yarnpkg.com/@types/yargs-parser/-/yargs-parser-21.0.3.tgz#815e30b786d2e8f0dcd85fd5bcf5e1a04d008f15"
   integrity sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ==
 
-"@types/yargs@^17.0.33":
-  version "17.0.33"
-  resolved "http://devbuild-srv.chargoon.net:30873/@types%2fyargs/-/yargs-17.0.33.tgz#8c32303da83eec050a84b3c7ae7b9f922d13e32d"
-  integrity sha512-WpxBCKWPLr4xSsHgz511rFJAM+wS28w2zEO1QDNY5zM/S8ok70NNfztH0xwhqKyaK0OHCbN98LDAZuy1ctxDkA==
-  dependencies:
-    "@types/yargs-parser" "*"
-
-"@types/yargs@^17.0.8":
+"@types/yargs@^17.0.33", "@types/yargs@^17.0.8":
   version "17.0.33"
   resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-17.0.33.tgz#8c32303da83eec050a84b3c7ae7b9f922d13e32d"
   integrity sha512-WpxBCKWPLr4xSsHgz511rFJAM+wS28w2zEO1QDNY5zM/S8ok70NNfztH0xwhqKyaK0OHCbN98LDAZuy1ctxDkA==
@@ -6517,6 +6515,14 @@ nestjs-command@^3.1.5:
   dependencies:
     lodash.compact "^3.0.1"
     lodash.flattendeep "^4.4.0"
+
+nestjs-commander@^0.2.6:
+  version "0.2.6"
+  resolved "http://devbuild-srv.chargoon.net:30873/nestjs-commander/-/nestjs-commander-0.2.6.tgz#3619b2c88b5ce2567f62889ba542d7e1f2b1fe32"
+  integrity sha512-S7mXEYBrW6ifzDsAV5vKgRsnVkRAjrp1JreGPbc2QQVpEtBXN05GH6r9l7WdV61uAMiGIXhK+jzdrJh8l/YZ3g==
+  dependencies:
+    "@types/node" "^11.13.5"
+    commander "^2.20.0"
 
 node-abort-controller@^3.0.1, node-abort-controller@^3.1.1:
   version "3.1.1"
