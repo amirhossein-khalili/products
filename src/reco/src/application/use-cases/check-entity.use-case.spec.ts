@@ -165,4 +165,13 @@ describe('RecoService (as CheckEntityUseCase)', () => {
       partialActualState,
     );
   });
+
+   // Test Case 5: Check Not Found Read model
+  it('execute() should return mismatch if entity not found in read model', async () => {
+  mockAggregateReconstructor.reconstruct.mockResolvedValue(mockAggregate);
+  mockReadRepository.findById.mockResolvedValue(null);
+  const result = await recoService.checkSingleId(entityId);
+  expect(result.comparison.isMatch).toBe(false);
+  expect(result.comparison.discrepancies[0].field).toBe('_entity');
+});
 });
