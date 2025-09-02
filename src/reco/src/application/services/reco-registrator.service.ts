@@ -4,6 +4,9 @@ import { RecoModuleOptions } from '../dtos/reco-module-options.dto';
 import { RECO_SERVICE_PORT } from '../constants/tokens';
 import { RecoServicePort } from '../ports/reco-service.port';
 
+/**
+ * Registers the reconciliation service in the RecoRegistry when the module is initialized.
+ */
 @Injectable()
 export class RecoRegistrator implements OnModuleInit {
   constructor(

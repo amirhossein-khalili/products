@@ -6,8 +6,17 @@ import { StateComparator as StateComparatorInterface } from '../../domain/servic
 import { ComparisonResult } from '../../domain/aggregates/comparison-result.aggregate';
 import { Discrepancy } from '../../domain/value-objects/discrepancy.value-object';
 
+/**
+ * A service that compares two states and returns the result of the comparison.
+ */
 @Injectable()
 export class StateComparator implements StateComparatorInterface {
+  /**
+   * Compares an expected state with an actual state.
+   * @param expected The expected state.
+   * @param actual The actual state.
+   * @returns A `ComparisonResult` object that represents the result of the comparison.
+   */
   compare(expected: any, actual: any): ComparisonResult {
     if (isEqual(expected, actual)) {
       return ComparisonResult.createMatch(actual._id);

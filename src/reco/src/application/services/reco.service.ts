@@ -44,8 +44,6 @@ export class RecoService implements RecoServicePort {
       : Object.keys(fullExpectedState);
     const expectedState = pick(fullExpectedState, fieldsToCheck);
 
-    // NOTE : check this part should exists ?
-    // the id fetch from read side so probably we dont need it
     if (!fullActualState) {
       const discrepancy = Discrepancy.create(
         '_entity',
@@ -130,11 +128,6 @@ export class RecoService implements RecoServicePort {
     return this.reconcileBatchByIds(ids, fields);
   }
 
-  /**
-   * Fetches entity IDs, either all or based on a filter.
-   * @param filters - Optional filters to apply.
-   * @returns A promise that resolves to an array of entity IDs.
-   */
   private async _getIds(filters?: Record<string, any>): Promise<string[]> {
     const hasFilters = filters && Object.keys(filters).length > 0;
     return hasFilters

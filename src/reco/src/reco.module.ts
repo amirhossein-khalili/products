@@ -33,6 +33,11 @@ import {
 
 @Module({})
 export class RecoModule {
+  /**
+   * Creates a new `RecoModule` for the root of the application.
+   * This method should be called only once in the root module of the application.
+   * @returns A `DynamicModule` object.
+   */
   static forRoot(): DynamicModule {
     return {
       module: RecoModule,
@@ -42,20 +47,23 @@ export class RecoModule {
     };
   }
 
+  /**
+   * Creates a new `RecoModule` for a feature of the application.
+   * @param options The options for the feature module.
+   * @returns A `DynamicModule` object.
+   */
   static forFeature<T extends BaseAggregate>(
     options: RecoModuleOptions<T>,
   ): DynamicModule {
     const DynamicRecoController = this.createDynamicController(options.path);
 
     const providers: Provider[] = [
-      // ---- Configuration Value Providers ----
       { provide: 'RECO_OPTIONS', useValue: options },
       { provide: TO_COMPARABLE_STATE, useValue: options.toComparableState },
       { provide: AGGREGATE_ROOT, useValue: options.aggregateRoot },
       { provide: EVENT_TRANSFORMERS, useValue: options.eventTransformers },
       { provide: AGGREGATE_NAME, useValue: options.aggregateName },
 
-      // ---- Infrastructure Providers ----
       {
         provide: ReconciliationRepository,
         useFactory: (model) => new ReconciliationRepository(model),
@@ -63,7 +71,6 @@ export class RecoModule {
       },
       { provide: STATE_COMPARATOR, useClass: StateComparator },
 
-      // ---- Application Service Providers ----
       {
         provide: AGGREGATE_RECONSTRUCTOR,
         useFactory: (
@@ -86,11 +93,9 @@ export class RecoModule {
         ],
       },
 
-      // ---- Registration Service ----
       RecoRegistrator,
     ];
 
-    // ---- Main Service Provider ----
     const recoServiceProvider: Provider = {
       provide: RECO_SERVICE_PORT,
       useFactory: (

@@ -26,34 +26,31 @@ export class AggregateReconstructor<T extends BaseAggregate>
     private readonly eventTransformers: Record<string, (event: any) => any>,
   ) {}
 
+  /**
+   * Reconstructs an aggregate from its event stream.
+   * @param id The ID of the aggregate to reconstruct.
+   * @returns The reconstructed aggregate.
+   * @throws {NotFoundException} If the aggregate with the given ID is not found.
+   */
   async reconstruct(id: string): Promise<T> {
-    // Construct the stream name based on convention (e.g., 'ProductAggregate-12345')
     const streamName = `${this.aggregateName}-${id}`;
-    console.log('inja 1');
-    console.log(streamName);
-
     this.logger.log(`Reconstructing aggregate from stream: ${streamName}`);
 
     const aggregate = new this.aggregateRoot();
 
     try {
-      // Use the EventStoreService's async generator similar to old readEvents function
       const eventStream =
         await this.eventStoreService.readStreamFromStart(streamName);
 
       let eventCount = 0;
       for await (const event of eventStream) {
-        // Skip system events (similar to old code logic)
         if (!event || event.eventType?.startsWith('$')) {
           continue;
         }
 
-        // Transform the event using the same transformers as old code
-        // The event is already converted by EventStoreService.convert(), but we need to apply transformers
         if (this.eventTransformers[event.eventType]) {
           const transformedEvent =
             this.eventTransformers[event.eventType](event);
-          // Apply event to aggregate (same as old rehydrate function)
           aggregate.apply(transformedEvent);
           eventCount++;
         } else {
@@ -73,7 +70,6 @@ export class AggregateReconstructor<T extends BaseAggregate>
     } catch (error) {
       this.logger.error(`Error reading stream ${streamName}: ${error.message}`);
 
-      // Handle StreamNotFoundError similar to old code
       if (
         error.message?.includes('Stream not found') ||
         error instanceof NotFoundException

@@ -6,6 +6,7 @@ import {
 } from 'nest-commander';
 import { RecoRegistry } from '../application/services/reco-registry.service';
 import { CliReportGenerator } from './cli-report-generator.service';
+import { Logger } from '@nestjs/common';
 
 @Command({
   name: 'reco',
@@ -14,6 +15,8 @@ import { CliReportGenerator } from './cli-report-generator.service';
   aliases: ['create-reco'],
 })
 export class RecoCommand extends CommandRunner {
+  private readonly logger = new Logger(RecoCommand.name);
+
   constructor(
     private readonly inquirer: InquirerService,
     private readonly recoRegistry: RecoRegistry,
@@ -22,6 +25,12 @@ export class RecoCommand extends CommandRunner {
     super();
   }
 
+  /**
+   * Runs the reconciliation command.
+   * It prompts the user for any missing options and then generates a report.
+   * @param passedParams The parameters passed to the command.
+   * @param options The options passed to the command.
+   */
   async run(
     passedParams: string[],
     options?: {
@@ -34,15 +43,12 @@ export class RecoCommand extends CommandRunner {
   ): Promise<void> {
     let { action, name, ids, filter, fields } = options;
 
-    // --- Interactive questions ---
     if (!name) {
-      // Assuming you have a question set named 'name-question'
       name = (
         await this.inquirer.ask<{ name: string }>('name-question', undefined)
       ).name;
     }
     if (!action) {
-      // Assuming you have a question set named 'action-question'
       action = (
         await this.inquirer.ask<{ action: 'check' | 'fix' }>(
           'action-question',
@@ -51,16 +57,14 @@ export class RecoCommand extends CommandRunner {
       ).action as 'check' | 'fix';
     }
 
-    // --- Get the correct service instance ---
     const recoService = this.recoRegistry.getService(name);
     if (!recoService) {
-      console.error(
+      this.logger.error(
         `❌ Error: No reconciliation module found with the name "${name}".`,
       );
       return;
     }
 
-    // --- Execute the report generator ---
     try {
       await this.reportGenerator.generateReport({
         recoService,
@@ -71,14 +75,18 @@ export class RecoCommand extends CommandRunner {
         fields,
       });
     } catch (error) {
-      console.error(
+      this.logger.error(
         '❌ An unexpected error occurred during command execution:',
         error.message,
       );
     }
   }
 
-  // --- Command-line Options ---
+  /**
+   * Parses the action option.
+   * @param val The value of the option.
+   * @returns The parsed action.
+   */
   @Option({
     flags: '-a, --action [string]',
     description: 'The action: "check" or "fix"',
@@ -89,6 +97,11 @@ export class RecoCommand extends CommandRunner {
     return val;
   }
 
+  /**
+   * Parses the name option.
+   * @param val The value of the option.
+   * @returns The parsed name.
+   */
   @Option({
     flags: '-n, --name [string]',
     description: 'The name of the reco module to run',
@@ -97,6 +110,12 @@ export class RecoCommand extends CommandRunner {
     return val;
   }
 
+  /**
+   * Parses the ids option.
+   * @param id The value of the option.
+   * @param previous The previous values of the option.
+   * @returns The parsed ids.
+   */
   @Option({
     flags: '-i, --ids [ids...]',
     description: 'A list of specific entity IDs',
@@ -105,6 +124,11 @@ export class RecoCommand extends CommandRunner {
     return [...previous, id];
   }
 
+  /**
+   * Parses the filter option.
+   * @param val The value of the option.
+   * @returns The parsed filter.
+   */
   @Option({
     flags: '-f, --filter [json]',
     description: 'A JSON string to filter entities',
@@ -117,6 +141,12 @@ export class RecoCommand extends CommandRunner {
     }
   }
 
+  /**
+   * Parses the fields option.
+   * @param field The value of the option.
+   * @param previous The previous values of the option.
+   * @returns The parsed fields.
+   */
   @Option({
     flags: '-p, --fields [fields...]',
     description: 'A list of specific fields',

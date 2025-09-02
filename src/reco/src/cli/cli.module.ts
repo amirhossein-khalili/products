@@ -1,5 +1,3 @@
-// File: reco/src/cli/cli.module.ts
-
 import { Module } from '@nestjs/common';
 import { ActionQuestion, NameQuestion } from './reco.questions';
 import { CliReportGenerator } from './cli-report-generator.service';
