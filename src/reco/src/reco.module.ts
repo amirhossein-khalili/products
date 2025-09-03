@@ -30,8 +30,14 @@ import {
   EventStoreService,
   BaseAggregate,
 } from 'com.chargoon.cloud.svc.common';
+import { CliReportGenerator } from './application/services/cli-report-generator.service';
+import { ActionQuestion, NameQuestion } from './application/cli/reco.questions';
+import { RecoCommand } from './application/cli/reco-command';
 
-@Module({})
+@Module({
+  imports: [],
+  // providers: [RecoCommand, ActionQuestion, NameQuestion, CliReportGenerator],
+})
 export class RecoModule {
   /**
    * Creates a new `RecoModule` for the root of the application.
@@ -41,7 +47,13 @@ export class RecoModule {
   static forRoot(): DynamicModule {
     return {
       module: RecoModule,
-      providers: [RecoRegistry],
+      providers: [
+        RecoRegistry,
+        RecoCommand,
+        ActionQuestion,
+        NameQuestion,
+        CliReportGenerator,
+      ],
       exports: [RecoRegistry],
       global: true,
     };

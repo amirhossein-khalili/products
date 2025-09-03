@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Body, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { RecoRegistry, RecoServicePort } from '../application';
 import { BatchIdsBodyDto, FilterBodyDto, SingleIdBodyDto } from './dtos';
 

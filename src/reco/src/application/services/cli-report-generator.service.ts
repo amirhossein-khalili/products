@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { RecoServicePort } from '../application';
 import * as XLSX from 'xlsx';
 import * as fs from 'fs';
 import * as path from 'path';
+import { RecoServicePort } from '../ports/reco-service.port';
 
 /**
  * Options for generating a report.
@@ -36,7 +36,13 @@ export class CliReportGenerator {
     let results: any[];
 
     try {
-      results = await this.fetchResults(recoService, action, ids, filter, fields);
+      results = await this.fetchResults(
+        recoService,
+        action,
+        ids,
+        filter,
+        fields,
+      );
     } catch (error) {
       this.logger.error(
         `An error occurred while fetching data from RecoService: ${error.message}`,

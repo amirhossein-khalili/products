@@ -4,9 +4,9 @@ import {
   InquirerService,
   Option,
 } from 'nest-commander';
-import { RecoRegistry } from '../application/services/reco-registry.service';
-import { CliReportGenerator } from './cli-report-generator.service';
 import { Logger } from '@nestjs/common';
+import { RecoRegistry } from '../services/reco-registry.service';
+import { CliReportGenerator } from '../services/cli-report-generator.service';
 
 @Command({
   name: 'reco',
