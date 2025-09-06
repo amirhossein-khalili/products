@@ -89,16 +89,16 @@ describe('RecoController (e2e)', () => {
   const entityId = '123';
   const comparableState = { name: 'Test', value: 100 };
 
-  describe('GET /test-entity/reco/fields', () => {
+  describe('GET /test-entity/reconciliation/fields', () => {
     it('should return comparable fields', () => {
       return request(app.getHttpServer())
-        .get('/test-entity/reco/fields')
+        .get('/test-entity/reconciliation/fields')
         .expect(200)
         .expect(['name', 'value']);
     });
   });
 
-  describe('POST /test-entity/reco', () => {
+  describe('POST /test-entity/reconciliation', () => {
     it('should return 201 with match on identical states', async () => {
       const matchResult = {
         id: entityId,
@@ -108,7 +108,7 @@ describe('RecoController (e2e)', () => {
       };
       mockRecoService.checkSingleId.mockResolvedValue(matchResult);
       await request(app.getHttpServer())
-        .post('/test-entity/reco')
+        .post('/test-entity/reconciliation')
         .send({ id: entityId })
         .expect(201)
         .expect((res) => {
@@ -127,7 +127,7 @@ describe('RecoController (e2e)', () => {
       };
       mockRecoService.checkSingleId.mockResolvedValue(mismatchResult);
       await request(app.getHttpServer())
-        .post('/test-entity/reco')
+        .post('/test-entity/reconciliation')
         .send({ id: entityId })
         .expect(201)
         .expect((res) => {
@@ -141,7 +141,7 @@ describe('RecoController (e2e)', () => {
         new NotFoundException('Aggregate not found.'),
       );
       await request(app.getHttpServer())
-        .post('/test-entity/reco')
+        .post('/test-entity/reconciliation')
         .send({ id: entityId })
         .expect(404)
         .expect((res) =>
@@ -151,18 +151,18 @@ describe('RecoController (e2e)', () => {
 
     it('should return 400 on invalid input', async () => {
       await request(app.getHttpServer())
-        .post('/test-entity/reco')
+        .post('/test-entity/reconciliation')
         .send({ id: 123 }) // Invalid type
         .expect(400);
     });
   });
 
-  describe('POST /test-entity/reco/fix', () => {
+  describe('POST /test-entity/reconciliation/fix', () => {
     it('should return 201 with updated document', async () => {
       const updatedDoc = { _id: entityId, ...comparableState };
       mockRecoService.reconcileById.mockResolvedValue(updatedDoc);
       await request(app.getHttpServer())
-        .post('/test-entity/reco/fix')
+        .post('/test-entity/reconciliation/fix')
         .send({ id: entityId })
         .expect(201)
         .expect(updatedDoc);
@@ -171,13 +171,13 @@ describe('RecoController (e2e)', () => {
     it('should return 404 if not found', async () => {
       mockRecoService.reconcileById.mockRejectedValue(new NotFoundException());
       await request(app.getHttpServer())
-        .post('/test-entity/reco/fix')
+        .post('/test-entity/reconciliation/fix')
         .send({ id: entityId })
         .expect(404);
     });
   });
 
-  describe('POST /test-entity/reco/batch', () => {
+  describe('POST /test-entity/reconciliation/batch', () => {
     it('should handle mixed results', async () => {
       const results = [
         { id: 'id1', comparison: ComparisonResult.createMatch('id1') },
@@ -185,7 +185,7 @@ describe('RecoController (e2e)', () => {
       ];
       mockRecoService.checkBatchIds.mockResolvedValue(results);
       await request(app.getHttpServer())
-        .post('/test-entity/reco/batch')
+        .post('/test-entity/reconciliation/batch')
         .send({ ids: ['id1', 'id2'] })
         .expect(201)
         .expect(results);
@@ -194,45 +194,45 @@ describe('RecoController (e2e)', () => {
     it('should return empty array on empty batch', async () => {
       mockRecoService.checkBatchIds.mockResolvedValue([]);
       await request(app.getHttpServer())
-        .post('/test-entity/reco/batch')
+        .post('/test-entity/reconciliation/batch')
         .send({ ids: [] })
         .expect(201)
         .expect([]);
     });
   });
 
-  describe('POST /test-entity/reco/batch/fix', () => {
+  describe('POST /test-entity/reconciliation/batch/fix', () => {
     it('should return fixed results', async () => {
       const results = [{ _id: 'id1' }, { id: 'id2', error: 'Failed' }];
       mockRecoService.reconcileBatchByIds.mockResolvedValue(results);
       await request(app.getHttpServer())
-        .post('/test-entity/reco/batch/fix')
+        .post('/test-entity/reconciliation/batch/fix')
         .send({ ids: ['id1', 'id2'] })
         .expect(201)
         .expect(results);
     });
   });
 
-  describe('POST /test-entity/reco/all', () => {
+  describe('POST /test-entity/reconciliation/all', () => {
     it('should check all with filters', async () => {
       const results = [
         { id: 'id1', comparison: ComparisonResult.createMatch('id1') },
       ];
       mockRecoService.checkAll.mockResolvedValue(results);
       await request(app.getHttpServer())
-        .post('/test-entity/reco/all')
+        .post('/test-entity/reconciliation/all')
         .send({ filters: { name: 'Test' } })
         .expect(201)
         .expect(results);
     });
   });
 
-  describe('POST /test-entity/reco/all/fix', () => {
+  describe('POST /test-entity/reconciliation/all/fix', () => {
     it('should fix all', async () => {
       const results = [{ _id: 'id1' }];
       mockRecoService.reconcileAll.mockResolvedValue(results);
       await request(app.getHttpServer())
-        .post('/test-entity/reco/all/fix')
+        .post('/test-entity/reconciliation/all/fix')
         .send({})
         .expect(201)
         .expect(results);

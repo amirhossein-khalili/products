@@ -10,7 +10,7 @@ import { ReconciliationServicePort } from '../ports/reconciliation-service.port'
 interface ReportGenerationOptions {
   recoService: ReconciliationServicePort;
   action: 'check' | 'fix';
-  name: string; // The name of the reco module
+  name: string; // The name of the reconciliation module
   ids?: string[];
   filter?: Record<string, any>;
   fields?: string[];
@@ -102,7 +102,7 @@ export class CliReportGenerator {
 
     const worksheet = XLSX.utils.json_to_sheet(flattenedData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Reco Report');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'reconciliation Report');
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const filename = `reconciliation-report-${options.name}-${options.action}-${timestamp}.xlsx`;

@@ -1,6 +1,6 @@
-# Reco Module Architecture
+# Reconciliation Module Architecture
 
-The `reco` module is designed using a layered architecture, which separates concerns and improves maintainability. The module is divided into four main layers: `domain`, `application`, `infrastructure`, and `interfaces`.
+The `reconciliation` module is designed using a layered architecture, which separates concerns and improves maintainability. The module is divided into four main layers: `domain`, `application`, `infrastructure`, and `interfaces`.
 
 ## Layers
 

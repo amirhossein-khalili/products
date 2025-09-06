@@ -104,7 +104,7 @@ export class ReconciliationCommand extends CommandRunner {
    */
   @Option({
     flags: '-n, --name [string]',
-    description: 'The name of the reco module to run',
+    description: 'The name of the reconciliation module to run',
   })
   parseName(val: string): string {
     return val;

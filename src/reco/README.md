@@ -1,6 +1,6 @@
-# Reco Module
+# Reconciliation Module
 
-The `reco` module provides a flexible and extensible framework for data reconciliation within the application. It is designed to identify and fix discrepancies between different data sources, such as an event store and a read model.
+The `Reconciliation` module provides a flexible and extensible framework for data reconciliation within the application. It is designed to identify and fix discrepancies between different data sources, such as an event store and a read model.
 
 ## Key Features
 
@@ -12,15 +12,15 @@ The `reco` module provides a flexible and extensible framework for data reconcil
 
 ## Getting Started
 
-To use the `reco` module, you need to import it into your application's root module and feature modules.
+To use the `Reconciliation` module, you need to import it into your application's root module and feature modules.
 
 ### Root Module
 
-In your root module, import `RecoModule` and call the `forRoot()` method:
+In your root module, import `ReconciliationModule` and call the `forRoot()` method:
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { RecoModule } from 'path/to/reconciliation.module';
+import { ReconciliationModule } from 'path/to/reconciliation.module';
 
 @Module({
   imports: [RecoModule.forRoot()],
@@ -60,10 +60,10 @@ export class MyFeatureModule {}
 
 ## CLI Usage
 
-The `reco` module includes a CLI for manual reconciliation tasks. You can run the CLI with the following command:
+The `Reconciliation` module includes a CLI for manual reconciliation tasks. You can run the CLI with the following command:
 
 ```bash
-npm run cli -- reco
+npm run cli -- reconciliation
 ```
 
 The CLI will prompt you for the action you want to perform (check or fix) and the name of the module you want to run the action on.

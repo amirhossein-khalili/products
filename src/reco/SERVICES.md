@@ -2,9 +2,9 @@
 
 This document provides an overview of the services in this application.
 
-## Reconciliation Service (`RecoService`)
+## Reconciliation Service (`ReconciliationService`)
 
-The `RecoService` is the core service of the application. It provides the following functionality:
+The `ReconciliationService` is the core service of the application. It provides the following functionality:
 
 - **Checking for discrepancies:** The service can check for discrepancies between the data in the event store and the data in the read model.
 - **Fixing discrepancies:** The service can fix discrepancies by updating the data in the read model to match the data in the event store.
@@ -29,7 +29,7 @@ The `RecoRegistrator` is a service that is used to register a reconciliation mod
 
 ## CLI Report Generator (`CliReportGenerator`)
 
-The `CliReportGenerator` is a service that is used to generate a report of the reconciliation results in Excel format. The service is used by the CLI to generate a report when the `reco` command is run.
+The `CliReportGenerator` is a service that is used to generate a report of the reconciliation results in Excel format. The service is used by the CLI to generate a report when the `reconciliation` command is run.
 
 # `RecoModule`
 

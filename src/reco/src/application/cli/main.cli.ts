@@ -6,17 +6,17 @@ import { ReconciliationCliConfig } from '../dtos/reconciliation-cli-config.dto';
 import { ReconciliationModule } from '../../reconciliation.module';
 
 /**
- * Loads the Reco CLI config from the environment variables or the default config file.
- * @returns The Reco CLI config.
+ * Loads the Reconciliation CLI config from the environment variables or the default config file.
+ * @returns The Reconciliation CLI config.
  */
 async function loadOptions(): Promise<ReconciliationCliConfig> {
   const configPath =
-    process.env.RECO_CLI_CONFIG ||
+    process.env.RECONCILIATION_CLI_CONFIG ||
     path.join(process.cwd(), 'reconciliation.cli.config.js');
 
   if (!fs.existsSync(configPath)) {
     throw new Error(
-      `Reco CLI config not found at: ${configPath}. Set RECO_CLI_CONFIG or create reconciliation.cli.config.js`,
+      `reconciliation CLI config not found at: ${configPath}. Set RECONCILIATION_CLI_CONFIG or create reconciliation.cli.config.js`,
     );
   }
 
@@ -37,7 +37,7 @@ function pathToFileUrl(p: string): URL {
 }
 
 /**
- * Bootstraps the Reco CLI.
+ * Bootstraps the reconciliation CLI.
  */
 async function bootstrap() {
   const options = await loadOptions();

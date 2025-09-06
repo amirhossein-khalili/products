@@ -175,7 +175,7 @@ export class ReconciliationModule {
   }
 
   private static createDynamicController(path: string): Type<any> {
-    @Controller(path + '/reco')
+    @Controller(path + '/reconciliation')
     class DynamicController extends ReconciliationController {
       constructor(
         @Inject(RECONCILIATION_SERVICE_PORT) service: ReconciliationService,

@@ -48,7 +48,7 @@ export class ReconciliationController {
    * @returns The result of the check.
    */
   @Post()
-  public reco(@Body() body: SingleIdBodyDto) {
+  public reconciliation(@Body() body: SingleIdBodyDto) {
     const { id, fields } = body;
     return this.recoService.checkSingleId(id, fields);
   }
