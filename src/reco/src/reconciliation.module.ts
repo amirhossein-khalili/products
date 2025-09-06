@@ -8,13 +8,16 @@ import {
 } from '@nestjs/common';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { ReconciliationRepository } from './infrastructure';
-import { RecoController } from './interfaces/reco.controller';
+import { RecoController } from './interfaces/reconciliation.controller';
 import {
   RecoService,
   RecoModuleOptions,
   AggregateReconstructor,
   StateComparator,
   RecoCliConfig,
+  RecoCommand,
+  ActionQuestion,
+  NameQuestion,
 } from './application';
 import {
   AGGREGATE_RECONSTRUCTOR,
@@ -25,16 +28,14 @@ import {
   EVENT_TRANSFORMERS,
   AGGREGATE_NAME,
 } from './application/constants/tokens';
-import { RecoRegistry } from './application/services/reco-registry.service';
-import { RecoRegistrator } from './application/services/reco-registrator.service';
+import { RecoRegistry } from './application/services/reconciliation-registry.service';
+import { RecoRegistrator } from './application/services/reconciliation-registrator.service';
 import {
   EventStoreService,
   BaseAggregate,
   EventStoreModule,
 } from 'com.chargoon.cloud.svc.common';
 import { CliReportGenerator } from './application/services/cli-report-generator.service';
-import { ActionQuestion, NameQuestion } from './application/cli/reco.questions';
-import { RecoCommand } from './application/cli/reco-command';
 import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({

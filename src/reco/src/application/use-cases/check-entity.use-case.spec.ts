@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
-import { RecoService } from '../services/reco.service';
+import { RecoService } from '../services/reconciliation.service';
 import { AggregateReconstructor } from '../services/aggregate-reconstructor.service';
 import { StateComparator } from '../services/state-comparator.service';
 import { ReconciliationRepository } from '../../infrastructure';

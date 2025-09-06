@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { RecoModuleOptions } from '../dtos/reco-module-options.dto';
-import { RecoServicePort } from '../ports/reco-service.port';
+import { RecoModuleOptions } from '../dtos/reconciliation-module-options.dto';
+import { RecoServicePort } from '../ports/reconciliation-service.port';
 
 /**
  * A registry for all reconciliation modules.

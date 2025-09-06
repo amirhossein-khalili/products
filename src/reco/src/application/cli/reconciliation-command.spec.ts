@@ -1,10 +1,9 @@
-// Fixed: test/application/cli/reco-command.spec.ts
 import { Test } from '@nestjs/testing';
-import { RecoCommand } from '../../../src/application/cli/reco-command';
+import { RecoCommand } from '../cli/reconciliation-command';
 import { InquirerService } from 'nest-commander';
-import { RecoRegistry } from '../../../src/application/services/reco-registry.service';
+import { RecoRegistry } from '../../../src/application/services/reconciliation-registry.service';
 import { CliReportGenerator } from '../../../src/application/services/cli-report-generator.service';
-import { RecoServicePort } from '../../../src/application/ports/reco-service.port';
+import { RecoServicePort } from '../../../src/application/ports/reconciliation-service.port';
 
 describe('RecoCommand', () => {
   let command: RecoCommand;

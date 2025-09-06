@@ -17,8 +17,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { ProductWriteRepository } from './infrastructure/repositories/write-product.repository';
 import { Product } from './domain/entities/product.aggregate-root';
-import { productsTransformers } from './products.transformers';
-import { RecoModule } from './reco/src/reco.module';
 
 export function toComparableState(aggregate: Product) {
   return {

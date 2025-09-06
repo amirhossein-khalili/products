@@ -14,7 +14,6 @@ import {
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { productsTransformers } from './products.transformers';
 import { ProductsModule } from './products.module';
-import { RecoModule } from './reco/src/reco.module';
 
 @Module({
   imports: [

@@ -20,7 +20,7 @@ In your root module, import `RecoModule` and call the `forRoot()` method:
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { RecoModule } from 'path/to/reco.module';
+import { RecoModule } from 'path/to/reconciliation.module';
 
 @Module({
   imports: [RecoModule.forRoot()],
@@ -34,7 +34,7 @@ In your feature modules, import `RecoModule` and call the `forFeature()` method 
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { RecoModule } from 'path/to/reco.module';
+import { RecoModule } from 'path/to/reconciliation.module';
 import { MyAggregate } from 'path/to/my.aggregate';
 import { MySchema } from 'path/to/my.schema';
 

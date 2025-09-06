@@ -5,7 +5,7 @@ import {
   Option,
 } from 'nest-commander';
 import { Logger } from '@nestjs/common';
-import { RecoRegistry } from '../services/reco-registry.service';
+import { RecoRegistry } from '../services/reconciliation-registry.service';
 import { CliReportGenerator } from '../services/cli-report-generator.service';
 
 @Command({

@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { Schema } from 'mongoose';
 import { getModelToken } from '@nestjs/mongoose';
-import { RecoModule } from '../src/reco.module';
+import { RecoModule } from '../src/reconciliation.module';
 import { ComparisonResult } from '../src/domain/aggregates/comparison-result.aggregate';
 import { Discrepancy } from '../src/domain/value-objects/discrepancy.value-object';
 import { NotFoundException } from '@nestjs/common';

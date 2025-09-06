@@ -1,4 +1,4 @@
-import { RecoModuleOptions } from './reco-module-options.dto';
+import { RecoModuleOptions } from './reconciliation-module-options.dto';
 
 export interface RecoCliConfig {
   mongo: {

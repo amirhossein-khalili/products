@@ -2,8 +2,8 @@ import 'dotenv/config';
 import { CommandFactory } from 'nest-commander';
 import * as path from 'path';
 import * as fs from 'fs';
-import { RecoCliConfig } from '../dtos/reco-cli-config.dto';
-import { RecoModule } from '../../reco.module';
+import { RecoCliConfig } from '../dtos/reconciliation-cli-config.dto';
+import { RecoModule } from '../../reconciliation.module';
 
 /**
  * Loads the Reco CLI config from the environment variables or the default config file.
@@ -12,11 +12,11 @@ import { RecoModule } from '../../reco.module';
 async function loadOptions(): Promise<RecoCliConfig> {
   const configPath =
     process.env.RECO_CLI_CONFIG ||
-    path.join(process.cwd(), 'reco.cli.config.js');
+    path.join(process.cwd(), 'reconciliation.cli.config.js');
 
   if (!fs.existsSync(configPath)) {
     throw new Error(
-      `Reco CLI config not found at: ${configPath}. Set RECO_CLI_CONFIG or create reco.cli.config.js`,
+      `Reco CLI config not found at: ${configPath}. Set RECO_CLI_CONFIG or create reconciliation.cli.config.js`,
     );
   }
 

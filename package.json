@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "reco": "RECO_CLI_CONFIG=$PWD/reco.cli.config.js node ./node_modules/@your-scope/reco/dist/cli/main.cli.js",
+    "reco": "RECO_CLI_CONFIG=$PWD/reconciliation.cli.config.js node ./node_modules/@your-scope/reco/dist/cli/main.cli.js",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -19,8 +19,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "cli": "RECO_CLI_CONFIG=$PWD/reco.cli.config.js ts-node -r tsconfig-paths/register src/reco/src/application/cli/main.cli.ts",
-    "check-reco-modules": "ts-node ./src/reco/src/check-reco-modules.ts"
+    "cli": "RECO_CLI_CONFIG=$PWD/reconciliation.cli.config.js ts-node -r tsconfig-paths/register src/reco/src/application/cli/main.cli.ts",
+    "check-reconciliation-modules": "ts-node ./src/reco/src/check-reconciliation-modules.ts"
   },
   "dependencies": {
     "@eventstore/db-client": "^6.2.1",

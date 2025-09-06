@@ -1,10 +1,9 @@
-// Fixed: test/application/services/reco-registrator.service.spec.ts
 import { Test } from '@nestjs/testing';
-import { RecoRegistrator } from '../../../src/application/services/reco-registrator.service';
-import { RecoRegistry } from '../../../src/application/services/reco-registry.service';
+import { RecoRegistrator } from '../../../src/application/services/reconciliation-registrator.service';
+import { RecoRegistry } from '../../../src/application/services/reconciliation-registry.service';
 import { RECO_SERVICE_PORT } from '../../../src/application/constants/tokens';
-import { RecoServicePort } from '../../../src/application/ports/reco-service.port';
-import { RecoModuleOptions } from '../../../src/application/dtos/reco-module-options.dto';
+import { RecoServicePort } from '../../../src/application/ports/reconciliation-service.port';
+import { RecoModuleOptions } from '../../../src/application/dtos/reconciliation-module-options.dto';
 
 describe('RecoRegistrator', () => {
   let registrator: RecoRegistrator;

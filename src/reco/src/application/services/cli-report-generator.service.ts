@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as XLSX from 'xlsx';
 import * as fs from 'fs';
 import * as path from 'path';
-import { RecoServicePort } from '../ports/reco-service.port';
+import { RecoServicePort } from '../ports/reconciliation-service.port';
 
 /**
  * Options for generating a report.
@@ -105,7 +105,7 @@ export class CliReportGenerator {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Reco Report');
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const filename = `reco-report-${options.name}-${options.action}-${timestamp}.xlsx`;
+    const filename = `reconciliation-report-${options.name}-${options.action}-${timestamp}.xlsx`;
 
     const outputDir = path.join(process.cwd(), 'reports');
     if (!fs.existsSync(outputDir)) {

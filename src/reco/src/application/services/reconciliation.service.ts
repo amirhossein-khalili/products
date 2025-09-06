@@ -8,7 +8,7 @@ import {
   ComparisonResult,
   Discrepancy,
 } from '../../domain';
-import { RecoServicePort } from '../ports/reco-service.port';
+import { RecoServicePort } from '../ports/reconciliation-service.port';
 import { TO_COMPARABLE_STATE } from '../constants/tokens';
 
 @Injectable()

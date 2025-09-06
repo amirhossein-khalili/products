@@ -1,4 +1,3 @@
-// Fixed: test/application/services/cli-report-generator.service.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
 import { CliReportGenerator } from '../../../src/application/services/cli-report-generator.service';
 import { Logger } from '@nestjs/common';
@@ -7,7 +6,7 @@ import { ComparisonResult, Discrepancy } from '../../../src/domain';
 import * as XLSX from 'xlsx';
 import * as fs from 'fs';
 import * as path from 'path';
-import { RecoServicePort } from '../../../src/application/ports/reco-service.port';
+import { RecoServicePort } from '../../../src/application/ports/reconciliation-service.port';
 
 jest.mock('fs');
 jest.mock('xlsx');

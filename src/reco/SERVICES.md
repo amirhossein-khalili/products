@@ -6,8 +6,8 @@ This document provides an overview of the services in this application.
 
 The `RecoService` is the core service of the application. It provides the following functionality:
 
-*   **Checking for discrepancies:** The service can check for discrepancies between the data in the event store and the data in the read model.
-*   **Fixing discrepancies:** The service can fix discrepancies by updating the data in the read model to match the data in the event store.
+- **Checking for discrepancies:** The service can check for discrepancies between the data in the event store and the data in the read model.
+- **Fixing discrepancies:** The service can fix discrepancies by updating the data in the read model to match the data in the event store.
 
 The service can be used to check or fix a single entity, a batch of entities, or all entities.
 
@@ -41,7 +41,7 @@ The `forRoot` method should be called in the root module of the application. It 
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { RecoModule } from 'path/to/reco.module';
+import { RecoModule } from 'path/to/reconciliation.module';
 
 @Module({
   imports: [RecoModule.forRoot()],
@@ -55,7 +55,7 @@ The `forFeature` method should be called in a feature module. It registers the r
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { RecoModule } from 'path/to/reco.module';
+import { RecoModule } from 'path/to/reconciliation.module';
 import { MyAggregate } from 'path/to/my.aggregate';
 import { MySchema } from 'path/to/my.schema';
 

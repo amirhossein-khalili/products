@@ -1,7 +1,6 @@
-// src/application/services/reco-registry.service.spec.ts
-import { RecoRegistry } from './reco-registry.service';
-import { RecoModuleOptions } from '../dtos/reco-module-options.dto';
-import { RecoServicePort } from '../ports/reco-service.port';
+import { RecoRegistry } from './reconciliation-registry.service';
+import { RecoModuleOptions } from '../dtos/reconciliation-module-options.dto';
+import { RecoServicePort } from '../ports/reconciliation-service.port';
 
 describe('RecoRegistry', () => {
   let registry: RecoRegistry;
@@ -32,7 +31,7 @@ describe('RecoRegistry', () => {
       'Module with name test already registered',
     );
   });
-  
+
   it('should register a module', () => {
     registry.register(mockOptions, mockService);
     expect(registry.getAll()).toEqual([mockOptions]);
