@@ -15,7 +15,7 @@ import { CliReportGenerator } from '../services/cli-report-generator.service';
   aliases: ['create-reco'],
 })
 export class RecoCommand extends CommandRunner {
-  private readonly logger = new Logger(RecoCommand.name);
+  readonly logger = new Logger(RecoCommand.name);
 
   constructor(
     private readonly inquirer: InquirerService,

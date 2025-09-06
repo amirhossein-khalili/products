@@ -1,19 +1,26 @@
-// src/application/services/cli-report-generator.service.spec.ts
+// Fixed: test/application/services/cli-report-generator.service.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
-import { CliReportGenerator } from './cli-report-generator.service';
+import { CliReportGenerator } from '../../../src/application/services/cli-report-generator.service';
 import { Logger } from '@nestjs/common';
-import { RECO_SERVICE_PORT } from '../constants/tokens';
-import { ComparisonResult, Discrepancy } from '../../domain';
+import { RECO_SERVICE_PORT } from '../../../src/application/constants/tokens';
+import { ComparisonResult, Discrepancy } from '../../../src/domain';
+import * as XLSX from 'xlsx';
+import * as fs from 'fs';
+import * as path from 'path';
+import { RecoServicePort } from '../../../src/application/ports/reco-service.port';
 
-// Create a mock class that implements the RecoServicePort interface
-class MockRecoService {
-  getComparableFields = jest.fn();
-  checkSingleId = jest.fn();
-  reconcileById = jest.fn();
-  checkBatchIds = jest.fn();
-  reconcileBatchByIds = jest.fn();
-  checkAll = jest.fn();
-  reconcileAll = jest.fn();
+jest.mock('fs');
+jest.mock('xlsx');
+jest.mock('path');
+
+interface MockRecoService extends RecoServicePort {
+  getComparableFields: jest.Mock;
+  checkSingleId: jest.Mock;
+  reconcileById: jest.Mock;
+  checkBatchIds: jest.Mock;
+  reconcileBatchByIds: jest.Mock;
+  checkAll: jest.Mock;
+  reconcileAll: jest.Mock;
 }
 
 describe('CliReportGenerator', () => {
@@ -22,7 +29,15 @@ describe('CliReportGenerator', () => {
   let loggerSpy: jest.SpyInstance;
 
   beforeEach(async () => {
-    mockRecoService = new MockRecoService();
+    mockRecoService = {
+      getComparableFields: jest.fn(),
+      checkSingleId: jest.fn(),
+      reconcileById: jest.fn(),
+      checkBatchIds: jest.fn(),
+      reconcileBatchByIds: jest.fn(),
+      checkAll: jest.fn(),
+      reconcileAll: jest.fn(),
+    } as MockRecoService;
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -40,6 +55,10 @@ describe('CliReportGenerator', () => {
     loggerSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation();
     jest.spyOn(Logger.prototype, 'log').mockImplementation();
     jest.spyOn(Logger.prototype, 'warn').mockImplementation();
+
+    (fs.existsSync as jest.Mock).mockReturnValue(false);
+    (fs.mkdirSync as jest.Mock).mockImplementation(() => {});
+    (path.join as jest.Mock).mockImplementation((...args) => args.join('/'));
   });
 
   afterEach(() => {
@@ -51,7 +70,7 @@ describe('CliReportGenerator', () => {
       const comparisonResult = new ComparisonResult(
         'test-id',
         false,
-        [new Discrepancy('field', 'expected', 'actual')],
+        [Discrepancy.create('field', 'expected', 'actual')],
         'Mismatch detected',
       );
 
@@ -65,7 +84,7 @@ describe('CliReportGenerator', () => {
       mockRecoService.checkSingleId.mockResolvedValue(mockResult);
 
       await service.generateReport({
-        recoService: mockRecoService as any,
+        recoService: mockRecoService,
         action: 'check',
         name: 'test-module',
         ids: ['test-id'],
@@ -75,6 +94,7 @@ describe('CliReportGenerator', () => {
         'test-id',
         undefined,
       );
+      expect(XLSX.writeFile).toHaveBeenCalled();
     });
 
     it('should handle fix action with single ID', async () => {
@@ -82,7 +102,7 @@ describe('CliReportGenerator', () => {
       mockRecoService.reconcileById.mockResolvedValue(mockResult);
 
       await service.generateReport({
-        recoService: mockRecoService as any,
+        recoService: mockRecoService,
         action: 'fix',
         name: 'test-module',
         ids: ['test-id'],
@@ -92,13 +112,14 @@ describe('CliReportGenerator', () => {
         'test-id',
         undefined,
       );
+      expect(XLSX.writeFile).toHaveBeenCalled();
     });
 
     it('should handle check action with multiple IDs', async () => {
       const comparisonResult1 = new ComparisonResult(
         'test-id-1',
         false,
-        [new Discrepancy('field', 'expected', 'actual')],
+        [Discrepancy.create('field', 'expected', 'actual')],
         'Mismatch detected',
       );
 
@@ -127,7 +148,7 @@ describe('CliReportGenerator', () => {
       mockRecoService.checkBatchIds.mockResolvedValue(mockResults);
 
       await service.generateReport({
-        recoService: mockRecoService as any,
+        recoService: mockRecoService,
         action: 'check',
         name: 'test-module',
         ids: ['test-id-1', 'test-id-2'],
@@ -137,6 +158,7 @@ describe('CliReportGenerator', () => {
         ['test-id-1', 'test-id-2'],
         undefined,
       );
+      expect(XLSX.writeFile).toHaveBeenCalled();
     });
 
     it('should handle errors from RecoService', async () => {
@@ -144,7 +166,7 @@ describe('CliReportGenerator', () => {
       mockRecoService.checkSingleId.mockRejectedValue(error);
 
       await service.generateReport({
-        recoService: mockRecoService as any,
+        recoService: mockRecoService,
         action: 'check',
         name: 'test-module',
         ids: ['test-id'],
@@ -162,7 +184,7 @@ describe('CliReportGenerator', () => {
       mockRecoService.checkAll.mockResolvedValue([]);
 
       await service.generateReport({
-        recoService: mockRecoService as any,
+        recoService: mockRecoService,
         action: 'check',
         name: 'test-module',
       });
@@ -210,7 +232,7 @@ describe('CliReportGenerator', () => {
       const comparisonResult = new ComparisonResult(
         'test-id',
         false,
-        [new Discrepancy('field', 'expected', 'actual')],
+        [Discrepancy.create('field', 'expected', 'actual')],
         'Mismatch detected in 1 fields',
       );
 
@@ -239,8 +261,8 @@ describe('CliReportGenerator', () => {
 
     it('should flatten fix results', () => {
       const results = [
-        { id: 'test-id', status: 'fixed' },
-        { id: 'test-id-2', error: 'Failed to fix' },
+        { _id: 'test-id', status: 'fixed' },
+        { _id: 'test-id-2', error: 'Failed to fix' },
       ];
 
       const flattened = (service as any).flattenResults(results, 'fix');
@@ -255,6 +277,28 @@ describe('CliReportGenerator', () => {
           ID: 'test-id-2',
           Status: 'Error',
           Details: 'Failed to fix',
+        },
+      ]);
+    });
+
+    it('should flatten check results with errors', () => {
+      const results = [
+        {
+          id: 'test-id',
+          error: 'Not found',
+        },
+      ];
+
+      const flattened = (service as any).flattenResults(results, 'check');
+
+      expect(flattened).toEqual([
+        {
+          ID: 'test-id',
+          'Is Match': 'Error',
+          'Discrepancy Field': 'N/A',
+          'Expected Value': 'N/A',
+          'Actual Value': 'N/A',
+          Details: 'Not found',
         },
       ]);
     });
