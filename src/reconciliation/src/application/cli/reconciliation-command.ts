@@ -19,7 +19,7 @@ export class ReconciliationCommand extends CommandRunner {
 
   constructor(
     private readonly inquirer: InquirerService,
-    private readonly recoRegistry: ReconciliationRegistry,
+    private readonly reconciliationRegistry: ReconciliationRegistry,
     private readonly reportGenerator: CliReportGenerator,
   ) {
     super();
@@ -57,8 +57,8 @@ export class ReconciliationCommand extends CommandRunner {
       ).action as 'check' | 'fix';
     }
 
-    const recoService = this.recoRegistry.getService(name);
-    if (!recoService) {
+    const reconciliationService = this.reconciliationRegistry.getService(name);
+    if (!reconciliationService) {
       this.logger.error(
         `❌ Error: No reconciliation module found with the name "${name}".`,
       );
@@ -67,7 +67,7 @@ export class ReconciliationCommand extends CommandRunner {
 
     try {
       await this.reportGenerator.generateReport({
-        recoService,
+        recoService: reconciliationService,
         action,
         name,
         ids,

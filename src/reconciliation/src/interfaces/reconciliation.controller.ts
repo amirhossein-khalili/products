@@ -20,8 +20,8 @@ import { BatchIdsBodyDto, FilterBodyDto, SingleIdBodyDto } from './dtos';
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 export class ReconciliationController {
   constructor(
-    private readonly recoService: ReconciliationServicePort,
-    private readonly recoRegistry: ReconciliationRegistry,
+    private readonly reconciliationService: ReconciliationServicePort,
+    private readonly reconciliationRegistry: ReconciliationRegistry,
   ) {}
 
   /**
@@ -30,7 +30,7 @@ export class ReconciliationController {
    */
   @Get('all-modules')
   public getModules() {
-    return this.recoRegistry.getAll();
+    return this.reconciliationRegistry.getAll();
   }
 
   /**
@@ -39,7 +39,7 @@ export class ReconciliationController {
    */
   @Get('fields')
   public getFields() {
-    return this.recoService.getComparableFields();
+    return this.reconciliationService.getComparableFields();
   }
 
   /**
@@ -50,7 +50,7 @@ export class ReconciliationController {
   @Post()
   public reconciliation(@Body() body: SingleIdBodyDto) {
     const { id, fields } = body;
-    return this.recoService.checkSingleId(id, fields);
+    return this.reconciliationService.checkSingleId(id, fields);
   }
 
   /**
@@ -59,9 +59,9 @@ export class ReconciliationController {
    * @returns The result of the fix.
    */
   @Post('fix')
-  public recoFix(@Body() body: SingleIdBodyDto) {
+  public reconciliationFix(@Body() body: SingleIdBodyDto) {
     const { id, fields } = body;
-    return this.recoService.reconcileById(id, fields);
+    return this.reconciliationService.reconcileById(id, fields);
   }
 
   /**
@@ -70,9 +70,9 @@ export class ReconciliationController {
    * @returns The result of the check.
    */
   @Post('batch')
-  public recoBatch(@Body() body: BatchIdsBodyDto) {
+  public reconciliationBatch(@Body() body: BatchIdsBodyDto) {
     const { ids, fields } = body;
-    return this.recoService.checkBatchIds(ids, fields);
+    return this.reconciliationService.checkBatchIds(ids, fields);
   }
 
   /**
@@ -81,9 +81,9 @@ export class ReconciliationController {
    * @returns The result of the fix.
    */
   @Post('batch/fix')
-  public recoFixBatch(@Body() body: BatchIdsBodyDto) {
+  public reconciliationFixBatch(@Body() body: BatchIdsBodyDto) {
     const { ids, fields } = body;
-    return this.recoService.reconcileBatchByIds(ids, fields);
+    return this.reconciliationService.reconcileBatchByIds(ids, fields);
   }
 
   /**
@@ -92,8 +92,8 @@ export class ReconciliationController {
    * @returns The result of the check.
    */
   @Post('all')
-  public recoAll(@Body() body: FilterBodyDto) {
-    return this.recoService.checkAll(body?.filters, body?.fields);
+  public reconciliationAll(@Body() body: FilterBodyDto) {
+    return this.reconciliationService.checkAll(body?.filters, body?.fields);
   }
 
   /**
@@ -102,7 +102,10 @@ export class ReconciliationController {
    * @returns The result of the fix.
    */
   @Post('all/fix')
-  public recoFixAll(@Body() body: FilterBodyDto) {
-    return this.recoService.reconcileAll(body?.filters, body?.fields);
+  public reconciliationFixAll(@Body() body: FilterBodyDto) {
+    return this.reconciliationService.reconcileAll(
+      body?.filters,
+      body?.fields,
+    );
   }
 }

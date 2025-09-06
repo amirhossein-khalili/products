@@ -43,7 +43,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 })
 export class ReconciliationModule {
   /**
-   * Creates a new `RecoModule` for the root of the application.
+   * Creates a new `ReconciliationModule` for the root of the application.
    * This method should be called only once in the root module of the application.
    * @returns A `DynamicModule` object.
    */
@@ -89,17 +89,19 @@ export class ReconciliationModule {
   }
 
   /**
-   * Creates a new `RecoModule` for a feature of the application.
+   * Creates a new `ReconciliationModule` for a feature of the application.
    * @param options The options for the feature module.
    * @returns A `DynamicModule` object.
    */
   static forFeature<T extends BaseAggregate>(
     options: ReconciliationModuleOptions<T>,
   ): DynamicModule {
-    const DynamicRecoController = this.createDynamicController(options.path);
+    const DynamicReconciliationController = this.createDynamicController(
+      options.path,
+    );
 
     const providers: Provider[] = [
-      { provide: 'RECO_OPTIONS', useValue: options },
+      { provide: 'RECONCILIATION_OPTIONS', useValue: options },
       { provide: TO_COMPARABLE_STATE, useValue: options.toComparableState },
       { provide: AGGREGATE_ROOT, useValue: options.aggregateRoot },
       { provide: EVENT_TRANSFORMERS, useValue: options.eventTransformers },
@@ -137,7 +139,7 @@ export class ReconciliationModule {
       ReconciliationRegistrator,
     ];
 
-    const recoServiceProvider: Provider = {
+    const reconciliationServiceProvider: Provider = {
       provide: RECONCILIATION_SERVICE_PORT,
       useFactory: (
         aggregateReconstructor: AggregateReconstructor<T>,
@@ -159,7 +161,7 @@ export class ReconciliationModule {
       ],
     };
 
-    providers.push(recoServiceProvider);
+    providers.push(reconciliationServiceProvider);
 
     return {
       module: ReconciliationModule,
@@ -168,9 +170,9 @@ export class ReconciliationModule {
           { name: options.name, schema: options.schema },
         ]),
       ],
-      controllers: [DynamicRecoController],
+      controllers: [DynamicReconciliationController],
       providers,
-      exports: [recoServiceProvider],
+      exports: [reconciliationServiceProvider],
     };
   }
 
@@ -179,9 +181,9 @@ export class ReconciliationModule {
     class DynamicController extends ReconciliationController {
       constructor(
         @Inject(RECONCILIATION_SERVICE_PORT) service: ReconciliationService,
-        @Inject() recoRegistry: ReconciliationRegistry,
+        @Inject() reconciliationRegistry: ReconciliationRegistry,
       ) {
-        super(service, recoRegistry);
+        super(service, reconciliationRegistry);
       }
     }
     return DynamicController;

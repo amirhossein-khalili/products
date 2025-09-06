@@ -23,24 +23,24 @@ import { Module } from '@nestjs/common';
 import { ReconciliationModule } from 'path/to/reconciliation.module';
 
 @Module({
-  imports: [RecoModule.forRoot()],
+  imports: [ReconciliationModule.forRoot()],
 })
 export class AppModule {}
 ```
 
 ### Feature Module
 
-In your feature modules, import `RecoModule` and call the `forFeature()` method with the appropriate options:
+In your feature modules, import `ReconciliationModule` and call the `forFeature()` method with the appropriate options:
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { RecoModule } from 'path/to/reconciliation.module';
+import { ReconciliationModule } from 'path/to/reconciliation.module';
 import { MyAggregate } from 'path/to/my.aggregate';
 import { MySchema } from 'path/to/my.schema';
 
 @Module({
   imports: [
-    RecoModule.forFeature({
+    ReconciliationModule.forFeature({
       name: 'my-feature',
       schema: MySchema,
       path: 'my-feature',
