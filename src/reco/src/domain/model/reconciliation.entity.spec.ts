@@ -4,7 +4,6 @@ import { Discrepancy } from '../value-objects/discrepancy.value-object';
 describe('ComparisonResult', () => {
   const entityId = 'entity-123';
 
-  // Test Case 1: Match
   describe('createMatch', () => {
     it('should create a result with isMatch: true and no discrepancies', () => {
       const result = ComparisonResult.createMatch(entityId);
@@ -17,7 +16,6 @@ describe('ComparisonResult', () => {
     });
   });
 
-  // Test Case 2: Mismatch
   describe('createMismatch', () => {
     it('should create a result with isMatch: false and store discrepancies', () => {
       const discrepancies = [
@@ -36,7 +34,6 @@ describe('ComparisonResult', () => {
     });
   });
 
-  // Test Case 3: isMatch getter (inherent in properties)
   describe('isMatch property', () => {
     it('should be true when created with createMatch', () => {
       const result = ComparisonResult.createMatch(entityId);

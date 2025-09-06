@@ -39,7 +39,6 @@ import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({
   imports: [],
-  // providers: [RecoCommand, ActionQuestion, NameQuestion, CliReportGenerator],
 })
 export class RecoModule {
   /**

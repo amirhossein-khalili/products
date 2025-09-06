@@ -13,6 +13,13 @@ import { TO_COMPARABLE_STATE } from '../constants/tokens';
 
 @Injectable()
 export class RecoService implements RecoServicePort {
+  /**
+   * Creates an instance of the RecoService.
+   * @param aggregateReconstructor The aggregate reconstructor service.
+   * @param stateComparator The state comparator service.
+   * @param readRepository The read repository.
+   * @param toComparableState A function that converts an aggregate to a comparable state.
+   */
   constructor(
     private readonly aggregateReconstructor: AggregateReconstructor<any>,
     private readonly stateComparator: StateComparator,
@@ -21,11 +28,21 @@ export class RecoService implements RecoServicePort {
     private readonly toComparableState: (aggregate: any) => any,
   ) {}
 
+  /**
+   * Gets the comparable fields of the reconciliation module.
+   * @returns An array of comparable fields.
+   */
   public getComparableFields(): string[] {
     const mockState = this.createMockState();
     return Object.keys(this.toComparableState(mockState));
   }
 
+  /**
+   * Checks a single entity.
+   * @param id The ID of the entity to check.
+   * @param fields The fields to check. If not provided, all fields will be checked.
+   * @returns The result of the check.
+   */
   public async checkSingleId(
     id: string,
     fields?: string[],
@@ -66,6 +83,12 @@ export class RecoService implements RecoServicePort {
     return { id, expectedState, actualState, comparison };
   }
 
+  /**
+   * Fixes a single entity.
+   * @param id The ID of the entity to fix.
+   * @param fields The fields to fix. If not provided, all fields will be fixed.
+   * @returns The result of the fix.
+   */
   public async reconcileById(id: string, fields?: string[]): Promise<any> {
     const aggregate = await this.aggregateReconstructor.reconstruct(id);
     const fullExpectedState = this.toComparableState(aggregate);
@@ -77,6 +100,12 @@ export class RecoService implements RecoServicePort {
     return this.readRepository.findByIdAndUpdate(id, updateData);
   }
 
+  /**
+   * Checks a batch of entities.
+   * @param ids The IDs of the entities to check.
+   * @param fields The fields to check. If not provided, all fields will be checked.
+   * @returns The result of the check.
+   */
   public async checkBatchIds(ids: string[], fields?: string[]): Promise<any[]> {
     const promises = ids.map((id) => this.checkSingleId(id, fields));
     const results = await Promise.allSettled(promises);
@@ -93,6 +122,12 @@ export class RecoService implements RecoServicePort {
     });
   }
 
+  /**
+   * Fixes a batch of entities.
+   * @param ids The IDs of the entities to fix.
+   * @param fields The fields to fix. If not provided, all fields will be fixed.
+   * @returns The result of the fix.
+   */
   public async reconcileBatchByIds(
     ids: string[],
     fields?: string[],
@@ -112,6 +147,12 @@ export class RecoService implements RecoServicePort {
     });
   }
 
+  /**
+   * Checks all entities.
+   * @param filters The filters to apply.
+   * @param fields The fields to check. If not provided, all fields will be checked.
+   * @returns The result of the check.
+   */
   public async checkAll(
     filters?: Record<string, any>,
     fields?: string[],
@@ -120,6 +161,12 @@ export class RecoService implements RecoServicePort {
     return this.checkBatchIds(ids, fields);
   }
 
+  /**
+   * Fixes all entities.
+   * @param filters The filters to apply.
+   * @param fields The fields to fix. If not provided, all fields will be fixed.
+   * @returns The result of the fix.
+   */
   public async reconcileAll(
     filters?: Record<string, any>,
     fields?: string[],
@@ -135,6 +182,12 @@ export class RecoService implements RecoServicePort {
       : this.readRepository.getAllIds();
   }
 
+  /**
+   * Creates a mock state object.
+   * This is used to get the comparable fields of the reconciliation module.
+   * The mock state object is a proxy that returns a mock value for any property that is accessed.
+   * @returns A mock state object.
+   */
   private createMockState(): any {
     return new Proxy(
       {},

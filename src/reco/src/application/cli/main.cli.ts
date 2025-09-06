@@ -1,14 +1,14 @@
 import 'dotenv/config';
-// or:
-// import dotenv from 'dotenv';
-// dotenv.config();
-
 import { CommandFactory } from 'nest-commander';
 import * as path from 'path';
 import * as fs from 'fs';
 import { RecoCliConfig } from '../dtos/reco-cli-config.dto';
 import { RecoModule } from '../../reco.module';
 
+/**
+ * Loads the Reco CLI config from the environment variables or the default config file.
+ * @returns The Reco CLI config.
+ */
 async function loadOptions(): Promise<RecoCliConfig> {
   const configPath =
     process.env.RECO_CLI_CONFIG ||
@@ -26,11 +26,19 @@ async function loadOptions(): Promise<RecoCliConfig> {
   return (mod.default || mod.options || mod) as RecoCliConfig;
 }
 
+/**
+ * Converts a path to a file URL.
+ * @param p The path to convert.
+ * @returns The file URL.
+ */
 function pathToFileUrl(p: string): URL {
   const absolute = path.isAbsolute(p) ? p : path.join(process.cwd(), p);
   return new URL('file://' + absolute);
 }
 
+/**
+ * Bootstraps the Reco CLI.
+ */
 async function bootstrap() {
   const options = await loadOptions();
   await CommandFactory.run(RecoModule.forRoot(options), ['error']);
