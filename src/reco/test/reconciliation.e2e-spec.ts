@@ -8,7 +8,7 @@ import { ComparisonResult } from '../src/domain/aggregates/comparison-result.agg
 import { Discrepancy } from '../src/domain/value-objects/discrepancy.value-object';
 import { NotFoundException } from '@nestjs/common';
 import { RECO_SERVICE_PORT } from '../src/application/constants/tokens';
-import { BaseAggregate, IMetadata } from 'com.chargoon.cloud.svc.common'; // Import with IMetadata if needed
+import { BaseAggregate, IMetadata } from 'com.chargoon.cloud.svc.common';
 
 // Mock Aggregate Root extending BaseAggregate with overrides
 class MockAggregateRoot extends BaseAggregate {
