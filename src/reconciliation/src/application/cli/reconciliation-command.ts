@@ -9,7 +9,7 @@ import { ReconciliationRegistry } from '../services/reconciliation-registry.serv
 import { CliReportGenerator } from '../services/cli-report-generator.service';
 
 @Command({
-  name: 'reconciliation',
+  name: 'Reconciliation',
   description:
     'Run reconciliation checks and fixes and export results to Excel.',
   aliases: ['reconciliation'],

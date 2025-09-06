@@ -13,7 +13,7 @@ export class ReconciliationRegistrator implements OnModuleInit {
     private readonly registry: ReconciliationRegistry,
     @Inject(RECONCILIATION_SERVICE_PORT)
     private readonly service: ReconciliationServicePort,
-    @Inject('RECO_OPTIONS')
+    @Inject('RECONCILIATION_OPTIONS')
     private readonly options: ReconciliationModuleOptions,
   ) {}
 

@@ -19,7 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "cli": "RECONCILIATION_CLI_CONFIG=$PWD/reconciliation.cli.config.js ts-node -r tsconfig-paths/register src/reco/src/application/cli/main.cli.ts",
+    "cli": "RECONCILIATION_CLI_CONFIG=$PWD/reconciliation.cli.config.js ts-node -r tsconfig-paths/register src/reconciliation/src/application/cli/main.cli.ts",
     "check-reconciliation-modules": "ts-node ./src/reco/src/check-reconciliation-modules.ts"
   },
   "dependencies": {

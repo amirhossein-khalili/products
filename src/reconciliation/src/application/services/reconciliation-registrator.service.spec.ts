@@ -20,7 +20,7 @@ describe('RecoRegistrator', () => {
         ReconciliationRegistrator,
         { provide: ReconciliationRegistry, useValue: mockRegistry },
         { provide: RECONCILIATION_SERVICE_PORT, useValue: mockService },
-        { provide: 'RECO_OPTIONS', useValue: mockOptions },
+        { provide: 'RECONCILIATION_OPTIONS', useValue: mockOptions },
       ],
     }).compile();
 
