@@ -2,14 +2,14 @@ import 'dotenv/config';
 import { CommandFactory } from 'nest-commander';
 import * as path from 'path';
 import * as fs from 'fs';
-import { RecoCliConfig } from '../dtos/reconciliation-cli-config.dto';
-import { RecoModule } from '../../reconciliation.module';
+import { ReconciliationCliConfig } from '../dtos/reconciliation-cli-config.dto';
+import { ReconciliationModule } from '../../reconciliation.module';
 
 /**
  * Loads the Reco CLI config from the environment variables or the default config file.
  * @returns The Reco CLI config.
  */
-async function loadOptions(): Promise<RecoCliConfig> {
+async function loadOptions(): Promise<ReconciliationCliConfig> {
   const configPath =
     process.env.RECO_CLI_CONFIG ||
     path.join(process.cwd(), 'reconciliation.cli.config.js');
@@ -23,7 +23,7 @@ async function loadOptions(): Promise<RecoCliConfig> {
   const mod = await import(pathToFileUrl(configPath).toString()).catch(
     async () => await import(configPath),
   );
-  return (mod.default || mod.options || mod) as RecoCliConfig;
+  return (mod.default || mod.options || mod) as ReconciliationCliConfig;
 }
 
 /**
@@ -41,7 +41,7 @@ function pathToFileUrl(p: string): URL {
  */
 async function bootstrap() {
   const options = await loadOptions();
-  await CommandFactory.run(RecoModule.forRoot(options), ['error']);
+  await CommandFactory.run(ReconciliationModule.forRoot(options), ['error']);
 }
 
 bootstrap();

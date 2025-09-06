@@ -8,11 +8,11 @@ import {
   ComparisonResult,
   Discrepancy,
 } from '../../domain';
-import { RecoServicePort } from '../ports/reconciliation-service.port';
+import { ReconciliationServicePort } from '../ports/reconciliation-service.port';
 import { TO_COMPARABLE_STATE } from '../constants/tokens';
 
 @Injectable()
-export class RecoService implements RecoServicePort {
+export class ReconciliationService implements ReconciliationServicePort {
   /**
    * Creates an instance of the RecoService.
    * @param aggregateReconstructor The aggregate reconstructor service.

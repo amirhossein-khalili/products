@@ -3,11 +3,11 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { Schema } from 'mongoose';
 import { getModelToken } from '@nestjs/mongoose';
-import { RecoModule } from '../src/reconciliation.module';
+import { ReconciliationModule } from '../src/reconciliation.module';
 import { ComparisonResult } from '../src/domain/aggregates/comparison-result.aggregate';
 import { Discrepancy } from '../src/domain/value-objects/discrepancy.value-object';
 import { NotFoundException } from '@nestjs/common';
-import { RECO_SERVICE_PORT } from '../src/application/constants/tokens';
+import { RECONCILIATION_SERVICE_PORT } from '../src/application/constants/tokens';
 import { BaseAggregate, IMetadata } from 'com.chargoon.cloud.svc.common';
 
 // Mock Aggregate Root extending BaseAggregate with overrides
@@ -56,7 +56,7 @@ describe('RecoController (e2e)', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
-        RecoModule.forFeature<MockAggregateRoot>({
+        ReconciliationModule.forFeature<MockAggregateRoot>({
           name: 'TestEntity',
           schema: new Schema({ name: String, value: Number }),
           path: 'test-entity',
@@ -70,7 +70,7 @@ describe('RecoController (e2e)', () => {
         }),
       ],
     })
-      .overrideProvider(RECO_SERVICE_PORT)
+      .overrideProvider(RECONCILIATION_SERVICE_PORT)
       .useValue(mockRecoService)
       .overrideProvider(getModelToken('TestEntity'))
       .useValue({}) // Mock Mongoose model

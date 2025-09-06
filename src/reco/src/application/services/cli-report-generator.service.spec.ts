@@ -1,18 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CliReportGenerator } from '../../../src/application/services/cli-report-generator.service';
 import { Logger } from '@nestjs/common';
-import { RECO_SERVICE_PORT } from '../../../src/application/constants/tokens';
+import { RECONCILIATION_SERVICE_PORT } from '../../../src/application/constants/tokens';
 import { ComparisonResult, Discrepancy } from '../../../src/domain';
 import * as XLSX from 'xlsx';
 import * as fs from 'fs';
 import * as path from 'path';
-import { RecoServicePort } from '../../../src/application/ports/reconciliation-service.port';
+import { ReconciliationServicePort } from '../../../src/application/ports/reconciliation-service.port';
 
 jest.mock('fs');
 jest.mock('xlsx');
 jest.mock('path');
 
-interface MockRecoService extends RecoServicePort {
+interface MockRecoService extends ReconciliationServicePort {
   getComparableFields: jest.Mock;
   checkSingleId: jest.Mock;
   reconcileById: jest.Mock;
@@ -42,7 +42,7 @@ describe('CliReportGenerator', () => {
       providers: [
         CliReportGenerator,
         {
-          provide: RECO_SERVICE_PORT,
+          provide: RECONCILIATION_SERVICE_PORT,
           useValue: mockRecoService,
         },
       ],

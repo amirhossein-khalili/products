@@ -8,28 +8,28 @@ import {
 } from '@nestjs/common';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { ReconciliationRepository } from './infrastructure';
-import { RecoController } from './interfaces/reconciliation.controller';
+import { ReconciliationController } from './interfaces/reconciliation.controller';
 import {
-  RecoService,
-  RecoModuleOptions,
+  ReconciliationService,
+  ReconciliationModuleOptions,
   AggregateReconstructor,
   StateComparator,
-  RecoCliConfig,
-  RecoCommand,
+  ReconciliationCliConfig,
+  ReconciliationCommand,
   ActionQuestion,
   NameQuestion,
 } from './application';
 import {
   AGGREGATE_RECONSTRUCTOR,
   AGGREGATE_ROOT,
-  RECO_SERVICE_PORT,
+  RECONCILIATION_SERVICE_PORT,
   STATE_COMPARATOR,
   TO_COMPARABLE_STATE,
   EVENT_TRANSFORMERS,
   AGGREGATE_NAME,
 } from './application/constants/tokens';
-import { RecoRegistry } from './application/services/reconciliation-registry.service';
-import { RecoRegistrator } from './application/services/reconciliation-registrator.service';
+import { ReconciliationRegistry } from './application/services/reconciliation-registry.service';
+import { ReconciliationRegistrator } from './application/services/reconciliation-registrator.service';
 import {
   EventStoreService,
   BaseAggregate,
@@ -41,13 +41,13 @@ import { CqrsModule } from '@nestjs/cqrs';
 @Module({
   imports: [],
 })
-export class RecoModule {
+export class ReconciliationModule {
   /**
    * Creates a new `RecoModule` for the root of the application.
    * This method should be called only once in the root module of the application.
    * @returns A `DynamicModule` object.
    */
-  static forRoot(options: RecoCliConfig): DynamicModule {
+  static forRoot(options: ReconciliationCliConfig): DynamicModule {
     const eventStoreModule = EventStoreModule.registerAsync({
       imports: [CqrsModule],
       inject: [],
@@ -70,20 +70,20 @@ export class RecoModule {
     });
     const mongooseModule = MongooseModule.forRoot(options.mongo.uri);
     const featureImports = options.features.map((feature) =>
-      RecoModule.forFeature(feature),
+      ReconciliationModule.forFeature(feature),
     );
 
     return {
-      module: RecoModule,
+      module: ReconciliationModule,
       imports: [eventStoreModule, mongooseModule, ...featureImports],
       providers: [
-        RecoRegistry,
-        RecoCommand,
+        ReconciliationRegistry,
+        ReconciliationCommand,
         ActionQuestion,
         NameQuestion,
         CliReportGenerator,
       ],
-      exports: [RecoRegistry],
+      exports: [ReconciliationRegistry],
       global: true,
     };
   }
@@ -94,7 +94,7 @@ export class RecoModule {
    * @returns A `DynamicModule` object.
    */
   static forFeature<T extends BaseAggregate>(
-    options: RecoModuleOptions<T>,
+    options: ReconciliationModuleOptions<T>,
   ): DynamicModule {
     const DynamicRecoController = this.createDynamicController(options.path);
 
@@ -134,18 +134,18 @@ export class RecoModule {
         ],
       },
 
-      RecoRegistrator,
+      ReconciliationRegistrator,
     ];
 
     const recoServiceProvider: Provider = {
-      provide: RECO_SERVICE_PORT,
+      provide: RECONCILIATION_SERVICE_PORT,
       useFactory: (
         aggregateReconstructor: AggregateReconstructor<T>,
         stateComparator: StateComparator,
         readRepository: ReconciliationRepository<any>,
         toComparableState: (aggregate: T) => any,
       ) =>
-        new RecoService(
+        new ReconciliationService(
           aggregateReconstructor,
           stateComparator,
           readRepository,
@@ -162,7 +162,7 @@ export class RecoModule {
     providers.push(recoServiceProvider);
 
     return {
-      module: RecoModule,
+      module: ReconciliationModule,
       imports: [
         MongooseModule.forFeature([
           { name: options.name, schema: options.schema },
@@ -176,10 +176,10 @@ export class RecoModule {
 
   private static createDynamicController(path: string): Type<any> {
     @Controller(path + '/reco')
-    class DynamicController extends RecoController {
+    class DynamicController extends ReconciliationController {
       constructor(
-        @Inject(RECO_SERVICE_PORT) service: RecoService,
-        @Inject() recoRegistry: RecoRegistry,
+        @Inject(RECONCILIATION_SERVICE_PORT) service: ReconciliationService,
+        @Inject() recoRegistry: ReconciliationRegistry,
       ) {
         super(service, recoRegistry);
       }

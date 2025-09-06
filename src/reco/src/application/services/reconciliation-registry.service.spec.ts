@@ -1,10 +1,10 @@
-import { RecoRegistry } from './reconciliation-registry.service';
-import { RecoModuleOptions } from '../dtos/reconciliation-module-options.dto';
-import { RecoServicePort } from '../ports/reconciliation-service.port';
+import { ReconciliationRegistry } from './reconciliation-registry.service';
+import { ReconciliationModuleOptions } from '../dtos/reconciliation-module-options.dto';
+import { ReconciliationServicePort } from '../ports/reconciliation-service.port';
 
 describe('RecoRegistry', () => {
-  let registry: RecoRegistry;
-  const mockOptions: RecoModuleOptions = {
+  let registry: ReconciliationRegistry;
+  const mockOptions: ReconciliationModuleOptions = {
     name: 'test',
     schema: {} as any,
     path: '',
@@ -13,10 +13,10 @@ describe('RecoRegistry', () => {
     aggregateName: 'test',
     eventTransformers: {},
   };
-  const mockService: RecoServicePort = {} as any;
+  const mockService: ReconciliationServicePort = {} as any;
 
   beforeEach(() => {
-    registry = new RecoRegistry();
+    registry = new ReconciliationRegistry();
   });
 
   it('should register a module and service', () => {

@@ -1,6 +1,6 @@
-import { RecoModuleOptions } from './reconciliation-module-options.dto';
+import { ReconciliationModuleOptions } from './reconciliation-module-options.dto';
 
-export interface RecoCliConfig {
+export interface ReconciliationCliConfig {
   mongo: {
     uri: string;
   };
@@ -12,5 +12,5 @@ export interface RecoCliConfig {
     subscriptions: any;
     transformers: any;
   };
-  features: RecoModuleOptions[];
+  features: ReconciliationModuleOptions[];
 }

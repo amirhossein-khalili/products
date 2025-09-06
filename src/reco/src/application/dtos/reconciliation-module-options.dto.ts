@@ -1,7 +1,7 @@
 import { Schema } from 'mongoose';
 import { Type } from '@nestjs/common';
 
-export interface RecoModuleOptions<T = any> {
+export interface ReconciliationModuleOptions<T = any> {
   name: string;
   schema: Schema;
   path: string;

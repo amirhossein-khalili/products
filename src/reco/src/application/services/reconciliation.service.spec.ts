@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { RecoService } from './reconciliation.service';
+import { ReconciliationService } from './reconciliation.service';
 import { NotFoundException } from '@nestjs/common';
 import { ComparisonResult } from '../../domain/aggregates/comparison-result.aggregate';
 import { AggregateReconstructor } from './aggregate-reconstructor.service';
@@ -17,7 +17,7 @@ const mockRepository = {
 const mockToComparable = jest.fn();
 
 describe('RecoService', () => {
-  let service: RecoService;
+  let service: ReconciliationService;
 
   beforeEach(async () => {
     const ReadRepositoryToken = 'ReadRepositoryToken';
@@ -25,10 +25,10 @@ describe('RecoService', () => {
     const module = await Test.createTestingModule({
       providers: [
         {
-          provide: RecoService,
+          provide: ReconciliationService,
           // Use a factory to manually create the RecoService instance
           useFactory: (reconstructor, comparator, repository, toComparable) =>
-            new RecoService(
+            new ReconciliationService(
               reconstructor,
               comparator,
               repository,
@@ -62,7 +62,7 @@ describe('RecoService', () => {
       ],
     }).compile();
 
-    service = module.get<RecoService>(RecoService);
+    service = module.get<ReconciliationService>(ReconciliationService);
     jest.clearAllMocks();
   });
 

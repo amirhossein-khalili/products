@@ -1,36 +1,38 @@
 import { Test } from '@nestjs/testing';
-import { RecoCommand } from '../cli/reconciliation-command';
+import { ReconciliationCommand } from '../cli/reconciliation-command';
 import { InquirerService } from 'nest-commander';
-import { RecoRegistry } from '../../../src/application/services/reconciliation-registry.service';
+import { ReconciliationRegistry } from '../../../src/application/services/reconciliation-registry.service';
 import { CliReportGenerator } from '../../../src/application/services/cli-report-generator.service';
-import { RecoServicePort } from '../../../src/application/ports/reconciliation-service.port';
+import { ReconciliationServicePort } from '../../../src/application/ports/reconciliation-service.port';
 
 describe('RecoCommand', () => {
-  let command: RecoCommand;
+  let command: ReconciliationCommand;
   let mockInquirer: jest.Mocked<InquirerService>;
-  let mockRegistry: jest.Mocked<RecoRegistry>;
+  let mockRegistry: jest.Mocked<ReconciliationRegistry>;
   let mockGenerator: jest.Mocked<CliReportGenerator>;
-  let mockService: jest.Mocked<Partial<RecoServicePort>>;
+  let mockService: jest.Mocked<Partial<ReconciliationServicePort>>;
 
   beforeEach(async () => {
     mockInquirer = { ask: jest.fn() } as any;
     mockRegistry = { getService: jest.fn() } as any;
     mockGenerator = { generateReport: jest.fn() } as any;
     mockService = { getComparableFields: jest.fn() } as jest.Mocked<
-      Partial<RecoServicePort>
+      Partial<ReconciliationServicePort>
     >;
 
     const module = await Test.createTestingModule({
       providers: [
-        RecoCommand,
+        ReconciliationCommand,
         { provide: InquirerService, useValue: mockInquirer },
-        { provide: RecoRegistry, useValue: mockRegistry },
+        { provide: ReconciliationRegistry, useValue: mockRegistry },
         { provide: CliReportGenerator, useValue: mockGenerator },
       ],
     }).compile();
 
-    command = module.get<RecoCommand>(RecoCommand);
-    mockRegistry.getService.mockReturnValue(mockService as RecoServicePort);
+    command = module.get<ReconciliationCommand>(ReconciliationCommand);
+    mockRegistry.getService.mockReturnValue(
+      mockService as ReconciliationServicePort,
+    );
   });
 
   it('should run with provided options', async () => {

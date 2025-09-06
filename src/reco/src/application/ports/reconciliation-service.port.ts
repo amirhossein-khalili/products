@@ -4,7 +4,7 @@ import { ComparisonResult } from '../../domain/aggregates/comparison-result.aggr
  * Defines the port for the reconciliation service.
  * This interface is used by the application layer to interact with the reconciliation service.
  */
-export interface RecoServicePort {
+export interface ReconciliationServicePort {
   /**
    * Gets the list of fields that can be compared.
    */

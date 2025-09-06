@@ -5,21 +5,21 @@ import {
   Option,
 } from 'nest-commander';
 import { Logger } from '@nestjs/common';
-import { RecoRegistry } from '../services/reconciliation-registry.service';
+import { ReconciliationRegistry } from '../services/reconciliation-registry.service';
 import { CliReportGenerator } from '../services/cli-report-generator.service';
 
 @Command({
-  name: 'reco',
+  name: 'reconciliation',
   description:
     'Run reconciliation checks and fixes and export results to Excel.',
   aliases: ['reconciliation'],
 })
-export class RecoCommand extends CommandRunner {
-  readonly logger = new Logger(RecoCommand.name);
+export class ReconciliationCommand extends CommandRunner {
+  readonly logger = new Logger(ReconciliationCommand.name);
 
   constructor(
     private readonly inquirer: InquirerService,
-    private readonly recoRegistry: RecoRegistry,
+    private readonly recoRegistry: ReconciliationRegistry,
     private readonly reportGenerator: CliReportGenerator,
   ) {
     super();

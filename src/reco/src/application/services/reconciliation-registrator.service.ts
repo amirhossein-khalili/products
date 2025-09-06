@@ -1,20 +1,20 @@
 import { Injectable, Inject, OnModuleInit } from '@nestjs/common';
-import { RecoRegistry } from './reconciliation-registry.service';
-import { RecoModuleOptions } from '../dtos/reconciliation-module-options.dto';
-import { RECO_SERVICE_PORT } from '../constants/tokens';
-import { RecoServicePort } from '../ports/reconciliation-service.port';
+import { ReconciliationRegistry } from './reconciliation-registry.service';
+import { ReconciliationModuleOptions } from '../dtos/reconciliation-module-options.dto';
+import { RECONCILIATION_SERVICE_PORT } from '../constants/tokens';
+import { ReconciliationServicePort } from '../ports/reconciliation-service.port';
 
 /**
  * Registers the reconciliation service in the RecoRegistry when the module is initialized.
  */
 @Injectable()
-export class RecoRegistrator implements OnModuleInit {
+export class ReconciliationRegistrator implements OnModuleInit {
   constructor(
-    private readonly registry: RecoRegistry,
-    @Inject(RECO_SERVICE_PORT)
-    private readonly service: RecoServicePort,
+    private readonly registry: ReconciliationRegistry,
+    @Inject(RECONCILIATION_SERVICE_PORT)
+    private readonly service: ReconciliationServicePort,
     @Inject('RECO_OPTIONS')
-    private readonly options: RecoModuleOptions,
+    private readonly options: ReconciliationModuleOptions,
   ) {}
 
   onModuleInit() {

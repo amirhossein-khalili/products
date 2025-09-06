@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
-import { RecoService } from '../services/reconciliation.service';
+import { ReconciliationService } from '../services/reconciliation.service';
 import { AggregateReconstructor } from '../services/aggregate-reconstructor.service';
 import { StateComparator } from '../services/state-comparator.service';
 import { ReconciliationRepository } from '../../infrastructure';
@@ -28,7 +28,7 @@ const toComparableState = (aggregate: any) => ({
 });
 
 describe('RecoService (as CheckEntityUseCase)', () => {
-  let recoService: RecoService;
+  let recoService: ReconciliationService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -36,9 +36,9 @@ describe('RecoService (as CheckEntityUseCase)', () => {
         // Provide the service using a factory to explicitly manage its dependencies,
         // which resolves the dependency injection error.
         {
-          provide: RecoService,
+          provide: ReconciliationService,
           useFactory: (aggReconstructor, comparator, readRepo, toComparable) =>
-            new RecoService(
+            new ReconciliationService(
               aggReconstructor,
               comparator,
               readRepo,
@@ -71,7 +71,7 @@ describe('RecoService (as CheckEntityUseCase)', () => {
       ],
     }).compile();
 
-    recoService = module.get<RecoService>(RecoService);
+    recoService = module.get<ReconciliationService>(ReconciliationService);
 
     // Reset mocks before each test
     jest.clearAllMocks();

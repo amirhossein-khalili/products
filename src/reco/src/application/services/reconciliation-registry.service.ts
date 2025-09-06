@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { RecoModuleOptions } from '../dtos/reconciliation-module-options.dto';
-import { RecoServicePort } from '../ports/reconciliation-service.port';
+import { ReconciliationModuleOptions } from '../dtos/reconciliation-module-options.dto';
+import { ReconciliationServicePort } from '../ports/reconciliation-service.port';
 
 /**
  * A registry for all reconciliation modules.
  * This service is used to keep track of all registered reconciliation modules and their services.
  */
 @Injectable()
-export class RecoRegistry {
+export class ReconciliationRegistry {
   private readonly modules = new Map<
     string,
-    { options: RecoModuleOptions; service: RecoServicePort }
+    { options: ReconciliationModuleOptions; service: ReconciliationServicePort }
   >();
 
   /**
@@ -19,7 +19,10 @@ export class RecoRegistry {
    * @param service The service of the module to register.
    * @throws {Error} If a module with the same name is already registered.
    */
-  register(options: RecoModuleOptions, service: RecoServicePort) {
+  register(
+    options: ReconciliationModuleOptions,
+    service: ReconciliationServicePort,
+  ) {
     if (this.modules.has(options.name)) {
       throw new Error(`Module with name ${options.name} already registered`);
     }
@@ -30,7 +33,7 @@ export class RecoRegistry {
    * Gets the options of all registered modules.
    * @returns An array of module options.
    */
-  getAll(): RecoModuleOptions[] {
+  getAll(): ReconciliationModuleOptions[] {
     return Array.from(this.modules.values()).map(({ options }) => options);
   }
 
@@ -39,7 +42,7 @@ export class RecoRegistry {
    * @param name The name of the module.
    * @returns The service of the module, or undefined if the module is not found.
    */
-  getService(name: string): RecoServicePort | undefined {
+  getService(name: string): ReconciliationServicePort | undefined {
     return this.modules.get(name)?.service;
   }
 }

@@ -2,13 +2,13 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as XLSX from 'xlsx';
 import * as fs from 'fs';
 import * as path from 'path';
-import { RecoServicePort } from '../ports/reconciliation-service.port';
+import { ReconciliationServicePort } from '../ports/reconciliation-service.port';
 
 /**
  * Options for generating a report.
  */
 interface ReportGenerationOptions {
-  recoService: RecoServicePort;
+  recoService: ReconciliationServicePort;
   action: 'check' | 'fix';
   name: string; // The name of the reco module
   ids?: string[];
@@ -65,7 +65,7 @@ export class CliReportGenerator {
    * Fetches the results from the reconciliation service based on the provided options.
    */
   private async fetchResults(
-    recoService: RecoServicePort,
+    recoService: ReconciliationServicePort,
     action: 'check' | 'fix',
     ids?: string[],
     filter?: Record<string, any>,

@@ -6,7 +6,10 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { RecoRegistry, RecoServicePort } from '../application';
+import {
+  ReconciliationRegistry,
+  ReconciliationServicePort,
+} from '../application';
 import { BatchIdsBodyDto, FilterBodyDto, SingleIdBodyDto } from './dtos';
 
 /**
@@ -15,10 +18,10 @@ import { BatchIdsBodyDto, FilterBodyDto, SingleIdBodyDto } from './dtos';
  */
 @Controller()
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
-export class RecoController {
+export class ReconciliationController {
   constructor(
-    private readonly recoService: RecoServicePort,
-    private readonly recoRegistry: RecoRegistry,
+    private readonly recoService: ReconciliationServicePort,
+    private readonly recoRegistry: ReconciliationRegistry,
   ) {}
 
   /**
