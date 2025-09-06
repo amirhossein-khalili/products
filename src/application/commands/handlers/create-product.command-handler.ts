@@ -8,6 +8,11 @@ import { IProductWriteRepository } from '../../../domain/repositories/write-prod
 import { PRODUCT_WRITE_REPOSITORY } from '../../../domain/repositories/injection-tokens';
 import { domainInfo } from '../../../domain/utils';
 
+/**
+ * Handles the `CreateProductCommand`.
+ *
+ * This command handler is responsible for creating a new product.
+ */
 @CommandHandler(CreateProductCommand)
 export class CreateProductHandler
   extends BaseCommandHandler
@@ -25,13 +30,21 @@ export class CreateProductHandler
     super(amqpConnection);
   }
 
+  /**
+   * Executes the `CreateProductCommand`.
+   *
+   * @param command - The `CreateProductCommand` instance.
+   */
   async execute(command: CreateProductCommand): Promise<any> {
     try {
       const { data, meta } = command;
 
+      // Merge the product context with the event publisher
       const product = this.publisher.mergeObjectContext(
         await this.repository.findOneById(command.data.id),
       );
+
+      // Create the product and commit the changes
       product.create(data, meta);
       product.commit();
     } catch (error) {
@@ -40,6 +53,7 @@ export class CreateProductHandler
         error.stack,
       );
 
+      // Publish an event indicating that the product creation failed
       await this.publishEvent({
         event: {
           evt: 'events.corr_products.create_product_failed',

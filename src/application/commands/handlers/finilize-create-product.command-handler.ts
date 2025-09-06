@@ -8,6 +8,11 @@ import { Product } from 'src/domain/entities/product.aggregate-root';
 import { IProductWriteRepository } from 'src/domain/repositories/write-product.irepository';
 import { FinilizeCreateProductDto } from 'src/domain/dtos/finilize-create-product.dto';
 
+/**
+ * Handles the `FinilizeCreateProductCommand`.
+ *
+ * This command handler is responsible for finalizing the creation of a new product.
+ */
 @CommandHandler(FinilizeCreateProductCommand)
 export class FinalizeCreateProductHandler
   extends BaseCommandHandler
@@ -26,16 +31,25 @@ export class FinalizeCreateProductHandler
     super(amqpConnection);
   }
 
+  /**
+   * Executes the `FinilizeCreateProductCommand`.
+   *
+   * @param command - The `FinilizeCreateProductCommand` instance.
+   */
   async execute(command: FinilizeCreateProductCommand) {
     this.logger.verbose(`${FinalizeCreateProductHandler.name} executed.`);
     const { data, meta } = command;
     try {
+      // Merge the product context with the event publisher
       const product: Product = this.publisher.mergeObjectContext(
         await this.repository.findOneById(data.id, meta),
       );
+
+      // Finalize the product creation and commit the changes
       product.finalizeCreate(data, meta);
       product.commit();
     } catch (err) {
+      // Publish an event indicating that the product finalization failed
       await this.publishEvent<FinilizeCreateProductDto>({
         event: {
           evt: 'events.products.finalize_create_product_failed',

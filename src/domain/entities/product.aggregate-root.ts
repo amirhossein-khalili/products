@@ -7,29 +7,40 @@ import { Logger } from '@nestjs/common';
 import { CreateProductDto, FinilizeCreateProductDto } from '../dtos';
 import { ProductCreatedEvent, CreateProductInitilizedEvent } from '../events';
 
+/**
+ * Represents a parsed product snapshot.
+ */
 export type ParsedProductSnapshot = Partial<BaseAggregate> & {
   id: string;
   versionHistory: Record<number, IMetadata>;
   numberOfEvents: number;
 };
 
+/**
+ * Represents a Product aggregate root.
+ *
+ * This class is responsible for managing the state of a product and applying business rules.
+ */
 export class Product extends BaseAggregate {
   protected readonly logger = new Logger(Product.name);
 
   public override id: string;
-
   public name: string;
-
   public price: number;
-
   public stock: number = 0;
-
   public status: string;
 
   constructor() {
     super();
   }
 
+  /**
+   * Initializes the creation of a new product.
+   *
+   * @param data - The data for creating the product.
+   * @param meta - The metadata associated with the creation.
+   * @throws {DuplicateIdException} If the product ID already exists.
+   */
   public create(data: CreateProductDto, meta: IMetadata) {
     this.logger.verbose('Product:create');
 
@@ -45,6 +56,12 @@ export class Product extends BaseAggregate {
     );
   }
 
+  /**
+   * Finalizes the creation of a product.
+   *
+   * @param data - The data for finalizing the product creation.
+   * @param meta - The metadata associated with the finalization.
+   */
   public finalizeCreate(data: FinilizeCreateProductDto, meta: IMetadata) {
     this.logger.verbose('products:finalizeCreate');
     try {
@@ -59,6 +76,11 @@ export class Product extends BaseAggregate {
     }
   }
 
+  /**
+   * Handles the `CreateProductInitilizedEvent`.
+   *
+   * @param event - The `CreateProductInitilizedEvent` instance.
+   */
   private onCreateProductInitilizedEvent(event: CreateProductInitilizedEvent) {
     const { data } = event;
     this.id = data.id;
