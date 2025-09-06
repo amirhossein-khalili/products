@@ -43,16 +43,6 @@ const Repositories: Provider[] = [
 
 @Module({
   imports: [
-    RecoModule.forFeature({
-      name: 'productschemas',
-      schema: ProductSchemaFactory,
-      path: 'products',
-      toComparableState,
-      aggregateRoot: Product,
-      aggregateName: 'corr_products',
-      eventTransformers: productsTransformers,
-    }),
-
     MongooseModule.forFeature([
       {
         name: ProductSchema.name,

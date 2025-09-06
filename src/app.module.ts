@@ -23,7 +23,6 @@ import { RecoModule } from './reco/src/reco.module';
       isGlobal: true,
     }),
 
-    RecoModule.forRoot(),
 
     CqrsModule,
 
