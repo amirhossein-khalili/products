@@ -103,9 +103,6 @@ export class ReconciliationController {
    */
   @Post('all/fix')
   public reconciliationFixAll(@Body() body: FilterBodyDto) {
-    return this.reconciliationService.reconcileAll(
-      body?.filters,
-      body?.fields,
-    );
+    return this.reconciliationService.reconcileAll(body?.filters, body?.fields);
   }
 }

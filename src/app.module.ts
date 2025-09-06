@@ -22,7 +22,6 @@ import { ProductsModule } from './products.module';
       isGlobal: true,
     }),
 
-
     CqrsModule,
 
     RabbitMQModule.forRootAsync({
