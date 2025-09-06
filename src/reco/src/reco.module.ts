@@ -14,6 +14,7 @@ import {
   RecoModuleOptions,
   AggregateReconstructor,
   StateComparator,
+  RecoCliConfig,
 } from './application';
 import {
   AGGREGATE_RECONSTRUCTOR,
@@ -29,10 +30,12 @@ import { RecoRegistrator } from './application/services/reco-registrator.service
 import {
   EventStoreService,
   BaseAggregate,
+  EventStoreModule,
 } from 'com.chargoon.cloud.svc.common';
 import { CliReportGenerator } from './application/services/cli-report-generator.service';
 import { ActionQuestion, NameQuestion } from './application/cli/reco.questions';
 import { RecoCommand } from './application/cli/reco-command';
+import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({
   imports: [],
@@ -44,9 +47,35 @@ export class RecoModule {
    * This method should be called only once in the root module of the application.
    * @returns A `DynamicModule` object.
    */
-  static forRoot(): DynamicModule {
+  static forRoot(options: RecoCliConfig): DynamicModule {
+    const eventStoreModule = EventStoreModule.registerAsync({
+      imports: [CqrsModule],
+      inject: [],
+      useFactory: async () => ({
+        connectionString: options.eventStore.connectionString,
+        channelCredentials: {
+          insecure: true,
+        },
+        defaultUserCredentials: {
+          username: options.eventStore.defaultUserCredentials.username,
+          password: options.eventStore.defaultUserCredentials.password,
+        },
+        endpoint: {
+          address: options.eventStore.endpoint.address,
+          port: options.eventStore.endpoint.port,
+        },
+      }),
+      subscriptions: {},
+      transformers: options.eventStore.transformers,
+    });
+    const mongooseModule = MongooseModule.forRoot(options.mongo.uri);
+    const featureImports = options.features.map((feature) =>
+      RecoModule.forFeature(feature),
+    );
+
     return {
       module: RecoModule,
+      imports: [eventStoreModule, mongooseModule, ...featureImports],
       providers: [
         RecoRegistry,
         RecoCommand,
