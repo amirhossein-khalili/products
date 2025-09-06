@@ -6,7 +6,6 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "reco": "RECO_CLI_CONFIG=$PWD/reco.cli.config.js node ./node_modules/@your-scope/reco/dist/cli/main.cli.js",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",

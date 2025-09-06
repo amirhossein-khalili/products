@@ -12,7 +12,7 @@ import { CliReportGenerator } from '../services/cli-report-generator.service';
   name: 'reco',
   description:
     'Run reconciliation checks and fixes and export results to Excel.',
-  aliases: ['create-reco'],
+  aliases: ['reconciliation'],
 })
 export class RecoCommand extends CommandRunner {
   readonly logger = new Logger(RecoCommand.name);
